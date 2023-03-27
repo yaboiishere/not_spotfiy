@@ -1,0 +1,43 @@
+<.header>
+  Listing Songs
+  <:actions>
+    <.link patch={~p"/songs/new"}>
+      <.button>New Song</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="songs"
+  rows={@streams.songs}
+  row_click={fn {_id, song} -> JS.navigate(~p"/songs/#{song}") end}
+>
+  <:col :let={{_id, song}} label="Name"><%= song.name %></:col>
+  <:col :let={{_id, song}} label="Year"><%= song.year %></:col>
+  <:col :let={{_id, song}} label="Content location"><%= song.content_location %></:col>
+  <:action :let={{_id, song}}>
+    <div class="sr-only">
+      <.link navigate={~p"/songs/#{song}"}>Show</.link>
+    </div>
+    <.link patch={~p"/songs/#{song}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, song}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: song.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="song-modal" show on_cancel={JS.patch(~p"/songs")}>
+  <.live_component
+    module={NotSpotifyWeb.SongLive.FormComponent}
+    id={@song.id || :new}
+    title={@page_title}
+    action={@live_action}
+    song={@song}
+    patch={~p"/songs"}
+  />
+</.modal>

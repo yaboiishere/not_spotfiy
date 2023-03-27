@@ -44,6 +44,7 @@ defmodule NotSpotifyWeb do
 
       import Plug.Conn
       import NotSpotifyWeb.Gettext
+      import Phoenix.LiveView.Controller
 
       unquote(verified_routes())
     end

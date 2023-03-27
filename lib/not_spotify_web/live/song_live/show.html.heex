@@ -1,0 +1,28 @@
+<.header>
+  Song <%= @song.id %>
+  <:subtitle>This is a song record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/songs/#{@song}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit song</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @song.name %></:item>
+  <:item title="Year"><%= @song.year %></:item>
+  <:item title="Content location"><%= @song.content_location %></:item>
+</.list>
+
+<.back navigate={~p"/songs"}>Back to songs</.back>
+
+<.modal :if={@live_action == :edit} id="song-modal" show on_cancel={JS.patch(~p"/songs/#{@song}")}>
+  <.live_component
+    module={NotSpotifyWeb.SongLive.FormComponent}
+    id={@song.id}
+    title={@page_title}
+    action={@live_action}
+    song={@song}
+    patch={~p"/songs/#{@song}"}
+  />
+</.modal>
