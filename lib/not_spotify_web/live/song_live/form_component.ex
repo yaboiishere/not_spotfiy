@@ -50,8 +50,15 @@ defmodule NotSpotifyWeb.SongLive.FormComponent do
     {:noreply, assign_form(socket, changeset)}
   end
 
-  def handle_event("save", %{"song" => song_params}, socket) do
-    save_song(socket, socket.assigns.action, song_params)
+  def handle_event(
+        "save",
+        %{"song" => song_params},
+        %{
+          assigns: %{action: action, current_user: current_user}
+        } = socket
+      ) do
+    song_params = Map.put(song_params, "artist_id", current_user.id)
+    save_song(socket, action, song_params)
   end
 
   defp save_song(socket, :edit, song_params) do

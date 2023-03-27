@@ -19,8 +19,6 @@ defmodule NotSpotifyWeb.Router do
 
   scope "/", NotSpotifyWeb do
     pipe_through :browser
-
-    get "/", SongController, :home
   end
 
   # Other scopes may use custom stacks.
@@ -63,6 +61,8 @@ defmodule NotSpotifyWeb.Router do
 
   scope "/", NotSpotifyWeb do
     pipe_through [:browser, :require_authenticated_user]
+
+    live "/", SongLive.Index
 
     live_session :require_authenticated_user,
       on_mount: [{NotSpotifyWeb.UserAuth, :ensure_authenticated}] do

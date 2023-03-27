@@ -6,15 +6,18 @@ defmodule NotSpotify.Media.Song do
     field :content_location, :string
     field :name, :string
     field :year, :integer
-    field :artist, :id
+
+    belongs_to :artist, NotSpotify.Accounts.User
 
     timestamps()
   end
 
+  @attrs ~w(name year content_location artist_id)a
+
   @doc false
   def changeset(song, attrs) do
     song
-    |> cast(attrs, [:name, :year, :content_location])
-    |> validate_required([:name, :year, :content_location])
+    |> cast(attrs, @attrs)
+    |> validate_required(@attrs)
   end
 end

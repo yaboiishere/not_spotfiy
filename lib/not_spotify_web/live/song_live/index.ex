@@ -3,10 +3,16 @@ defmodule NotSpotifyWeb.SongLive.Index do
 
   alias NotSpotify.Media
   alias NotSpotify.Media.Song
+  alias NotSpotify.Accounts
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, stream(socket, :songs, Media.list_songs())}
+  def mount(_params, %{"user_token" => user_token}, socket) do
+    new_socket =
+      socket
+      |> assign(:current_user, Accounts.get_user_by_session_token(user_token))
+      |> stream(:songs, Media.list_songs())
+
+    {:ok, new_socket}
   end
 
   @impl true
@@ -30,6 +36,10 @@ defmodule NotSpotifyWeb.SongLive.Index do
     socket
     |> assign(:page_title, "Listing Songs")
     |> assign(:song, nil)
+  end
+
+  defp apply_action(socket, nil, params) do
+    apply_action(socket, :index, params)
   end
 
   @impl true

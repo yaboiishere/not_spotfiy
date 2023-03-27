@@ -2,9 +2,11 @@ defmodule NotSpotifyWeb.SongLive.Show do
   use NotSpotifyWeb, :live_view
 
   alias NotSpotify.Media
+  alias NotSpotify.Accounts
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, %{"user_token" => user_token}, socket) do
+    socket = assign(socket, current_user: Accounts.get_user_by_session_token(user_token))
     {:ok, socket}
   end
 

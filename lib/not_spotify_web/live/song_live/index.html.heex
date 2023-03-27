@@ -14,7 +14,7 @@
 >
   <:col :let={{_id, song}} label="Name"><%= song.name %></:col>
   <:col :let={{_id, song}} label="Year"><%= song.year %></:col>
-  <:col :let={{_id, song}} label="Content location"><%= song.content_location %></:col>
+  <:col :let={{_id, song}} label="Artist"><%= song.artist.username %></:col>
   <:action :let={{_id, song}}>
     <div class="sr-only">
       <.link navigate={~p"/songs/#{song}"}>Show</.link>
@@ -39,5 +39,6 @@
     action={@live_action}
     song={@song}
     patch={~p"/songs"}
+    current_user={@current_user}
   />
 </.modal>

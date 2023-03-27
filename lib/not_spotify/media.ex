@@ -18,7 +18,9 @@ defmodule NotSpotify.Media do
 
   """
   def list_songs do
-    Repo.all(Song)
+    Song
+    |> Repo.all()
+    |> Repo.preload(:artist)
   end
 
   @doc """
