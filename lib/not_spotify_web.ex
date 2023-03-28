@@ -50,10 +50,16 @@ defmodule NotSpotifyWeb do
     end
   end
 
-  def live_view do
+  def live_view(opts \\ []) do
     quote do
-      use Phoenix.LiveView,
-        layout: {NotSpotifyWeb.Layouts, :app}
+      @opts Keyword.merge(
+              [
+                layout: {NotSpotifyWeb.Layouts, :live},
+                container: {:div, class: "relative h-screen overflow-hidden bg-white"}
+              ],
+              unquote(opts)
+            )
+      use Phoenix.LiveView, @opts
 
       unquote(html_helpers())
     end
@@ -110,5 +116,9 @@ defmodule NotSpotifyWeb do
   """
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])
+  end
+
+  defmacro __using__({which, opts}) when is_atom(which) do
+    apply(__MODULE__, which, [opts])
   end
 end

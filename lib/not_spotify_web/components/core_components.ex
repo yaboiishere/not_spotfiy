@@ -15,6 +15,7 @@ defmodule NotSpotifyWeb.CoreComponents do
   Icons are provided by [heroicons](https://heroicons.com). See `icon/1` for usage.
   """
   use Phoenix.Component
+  use NotSpotifyWeb, :verified_routes
 
   alias Phoenix.LiveView.JS
   import NotSpotifyWeb.Gettext
@@ -38,96 +39,151 @@ defmodule NotSpotifyWeb.CoreComponents do
   """
   attr :id, :string, required: true
   attr :show, :boolean, default: false
+  attr :patch, :string, default: nil
+  attr :navigate, :string, default: nil
   attr :on_cancel, JS, default: %JS{}
-  slot :inner_block, required: true
+  attr :on_confirm, JS, default: %JS{}
+  attr :rest, :global
+
+  slot :title
+  slot :confirm
+  slot :cancel
 
   def modal(assigns) do
     ~H"""
     <div
       id={@id}
-      phx-mounted={@show && show_modal(@id)}
-      phx-remove={hide_modal(@id)}
-      data-cancel={JS.exec(@on_cancel, "phx-remove")}
-      class="relative z-50 hidden"
+      class={"fixed z-10 inset-0 overflow-y-auto #{if @show, do: "fade-in", else: "hidden"}"}
+      {@rest}
     >
-      <div id={"#{@id}-bg"} class="bg-zinc-50/90 fixed inset-0 transition-opacity" aria-hidden="true" />
-      <div
-        class="fixed inset-0 overflow-y-auto"
-        aria-labelledby={"#{@id}-title"}
-        aria-describedby={"#{@id}-description"}
-        role="dialog"
-        aria-modal="true"
-        tabindex="0"
-      >
-        <div class="flex min-h-full items-center justify-center">
-          <div class="w-full max-w-3xl p-4 sm:p-6 lg:py-8">
-            <.focus_wrap
-              id={"#{@id}-container"}
-              phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
-              phx-key="escape"
-              phx-click-away={JS.exec("data-cancel", to: "##{@id}")}
-              class="shadow-zinc-700/10 ring-zinc-700/10 relative hidden rounded-2xl bg-white p-14 shadow-lg ring-1 transition"
-            >
-              <div class="absolute top-6 right-5">
+      <.focus_wrap id={"#{@id}-focus-wrap"}>
+        <div
+          class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+          aria-labelledby={"#{@id}-title"}
+          aria-describedby={"#{@id}-description"}
+          role="dialog"
+          aria-modal="true"
+          tabindex="0"
+        >
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true">
+          </div>
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+            &#8203;
+          </span>
+          <div
+            id={"#{@id}-container"}
+            class={
+              "#{if @show, do: "fade-in-scale", else: "hidden"} sticky inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform sm:my-8 sm:align-middle sm:max-w-xl sm:w-full sm:p-6"
+            }
+            phx-window-keydown={hide_modal(@on_cancel, @id)}
+            phx-key="escape"
+            phx-click-away={hide_modal(@on_cancel, @id)}
+          >
+            <%= if @patch do %>
+              <.link patch={@patch} data-modal-return class="hidden"></.link>
+            <% end %>
+            <%= if @navigate do %>
+              <.link navigate={@navigate} data-modal-return class="hidden"></.link>
+            <% end %>
+            <div class="sm:flex sm:items-start">
+              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-purple-100 sm:mx-0">
+                <!-- Heroicon name: outline/plus -->
+                <.icon name={:information_circle} outlined class="h-6 w-6 text-purple-600" />
+              </div>
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full mr-12">
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id={"#{@id}-title"}>
+                  <%= render_slot(@title) %>
+                </h3>
+                <div class="mt-2">
+                  <p id={"#{@id}-content"} class="text-sm text-gray-500">
+                    <%= render_slot(@inner_block) %>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <%= for confirm <- @confirm do %>
                 <button
-                  phx-click={JS.exec("data-cancel", to: "##{@id}")}
-                  type="button"
-                  class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
-                  aria-label={gettext("close")}
+                  id={"#{@id}-confirm"}
+                  class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  phx-click={@on_confirm}
+                  phx-disable-with
+                  {assigns_to_attributes(confirm)}
                 >
-                  <.icon name="hero-x-mark-solid" class="h-5 w-5" />
+                  <%= render_slot(confirm) %>
                 </button>
-              </div>
-              <div id={"#{@id}-content"}>
-                <%= render_slot(@inner_block) %>
-              </div>
-            </.focus_wrap>
+              <% end %>
+              <%= for cancel <- @cancel do %>
+                <button
+                  class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                  phx-click={hide_modal(@on_cancel, @id)}
+                  {assigns_to_attributes(cancel)}
+                >
+                  <%= render_slot(cancel) %>
+                </button>
+              <% end %>
+            </div>
           </div>
         </div>
+      </.focus_wrap>
+    </div>
+    """
+  end
+
+  attr :flash, :map
+  attr :kind, :atom
+
+  def flash(%{kind: :error} = assigns) do
+    ~H"""
+    <div
+      :if={msg = Phoenix.Flash.get(@flash, @kind)}
+      id="flash"
+      class="rounded-md bg-red-50 p-4 fixed top-1 right-1 w-96 fade-in-scale z-50"
+      phx-click={
+        JS.push("lv:clear-flash")
+        |> JS.remove_class("fade-in-scale", to: "#flash")
+        |> hide("#flash")
+      }
+      phx-hook="Flash"
+    >
+      <div class="flex justify-between items-center space-x-3 text-red-700">
+        <.icon name={:exclamation_circle} class="w-5 w-5" />
+        <p class="flex-1 text-sm font-medium" role="alert">
+          <%= msg %>
+        </p>
+        <button
+          type="button"
+          class="inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
+        >
+          <.icon name={:x} class="w-4 h-4" />
+        </button>
       </div>
     </div>
     """
   end
 
-  @doc """
-  Renders flash notices.
-
-  ## Examples
-
-      <.flash kind={:info} flash={@flash} />
-      <.flash kind={:info} phx-mounted={show("#flash")}>Welcome Back!</.flash>
-  """
-  attr :id, :string, default: "flash", doc: "the optional id of flash container"
-  attr :flash, :map, default: %{}, doc: "the map of flash messages to display"
-  attr :title, :string, default: nil
-  attr :kind, :atom, values: [:info, :error], doc: "used for styling and flash lookup"
-  attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
-
-  slot :inner_block, doc: "the optional inner block that renders the flash message"
-
-  def flash(assigns) do
+  def flash(%{kind: :info} = assigns) do
     ~H"""
     <div
-      :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
-      id={@id}
-      phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
-      role="alert"
-      class={[
-        "fixed top-2 right-2 w-80 sm:w-96 z-50 rounded-lg p-3 ring-1",
-        @kind == :info && "bg-emerald-50 text-emerald-800 ring-emerald-500 fill-cyan-900",
-        @kind == :error && "bg-rose-50 text-rose-900 shadow-md ring-rose-500 fill-rose-900"
-      ]}
-      {@rest}
+      :if={msg = Phoenix.Flash.get(@flash, @kind)}
+      id="flash"
+      class="rounded-md bg-green-50 p-4 fixed top-1 right-1 w-96 fade-in-scale z-50"
+      phx-click={JS.push("lv:clear-flash") |> JS.remove_class("fade-in-scale") |> hide("#flash")}
+      phx-value-key="info"
+      phx-hook="Flash"
     >
-      <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
-        <.icon :if={@kind == :info} name="hero-information-circle-mini" class="h-4 w-4" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-4 w-4" />
-        <%= @title %>
-      </p>
-      <p class="mt-2 text-sm leading-5"><%= msg %></p>
-      <button type="button" class="group absolute top-1 right-1 p-2" aria-label={gettext("close")}>
-        <.icon name="hero-x-mark-solid" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
-      </button>
+      <div class="flex justify-between items-center space-x-3 text-green-700">
+        <.icon name={:check_circle} class="w-5 h-5" />
+        <p class="flex-1 text-sm font-medium" role="alert">
+          <%= msg %>
+        </p>
+        <button
+          type="button"
+          class="inline-flex bg-green-50 rounded-md p-1.5 text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
+        >
+          <.icon name={:x} class="w-4 h-4" />
+        </button>
+      </div>
     </div>
     """
   end
@@ -143,18 +199,8 @@ defmodule NotSpotifyWeb.CoreComponents do
 
   def flash_group(assigns) do
     ~H"""
-    <.flash kind={:info} title="Success!" flash={@flash} />
-    <.flash kind={:error} title="Error!" flash={@flash} />
-    <.flash
-      id="disconnected"
-      kind={:error}
-      title="We can't find the internet"
-      phx-disconnected={show("#disconnected")}
-      phx-connected={hide("#disconnected")}
-      hidden
-    >
-      Attempting to reconnect <.icon name="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
-    </.flash>
+    <.flash kind={:info} flash={@flash} />
+    <.flash kind={:error} flash={@flash} />
     """
   end
 
@@ -373,13 +419,33 @@ defmodule NotSpotifyWeb.CoreComponents do
   @doc """
   Generates a generic error message.
   """
-  slot :inner_block, required: true
+  def error(%{errors: errors, field: field} = assigns) do
+    assigns =
+      assigns
+      |> assign(:error_values, Keyword.get_values(errors, field))
+      |> assign_new(:class, fn -> "" end)
+
+    ~H"""
+    <%= for error <- @error_values do %>
+      <span
+        phx-feedback-for={@input_name}
+        class={
+          "invalid-feedback inline-block pl-2 pr-2 text-sm text-white bg-red-600 rounded-md #{@class}"
+        }
+      >
+        <%= translate_error(error) %>
+      </span>
+    <% end %>
+    <%= if Enum.empty?(@error_values) do %>
+      <span class={"invalid-feedback inline-block h-0 #{@class}"}></span>
+    <% end %>
+    """
+  end
 
   def error(assigns) do
     ~H"""
     <p class="mt-3 flex gap-3 text-sm leading-6 text-rose-600 phx-no-feedback:hidden">
-      <.icon name="hero-exclamation-circle-mini" class="mt-0.5 h-5 w-5 flex-none" />
-      <%= render_slot(@inner_block) %>
+      - <%= render_slot(@inner_block) %> -
     </p>
     """
   end
@@ -529,7 +595,7 @@ defmodule NotSpotifyWeb.CoreComponents do
         navigate={@navigate}
         class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
       >
-        <.icon name="hero-arrow-left-solid" class="h-3 w-3" />
+        <.icon name={:"hero-arrow-left-solid"} class="h-3 w-3" />
         <%= render_slot(@inner_block) %>
       </.link>
     </div>
@@ -554,12 +620,19 @@ defmodule NotSpotifyWeb.CoreComponents do
       <.icon name="hero-x-mark-solid" />
       <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
   """
-  attr :name, :string, required: true
-  attr :class, :string, default: nil
+  attr :name, :atom, required: true
+  attr :outlined, :boolean, default: false
+  attr :rest, :global, default: %{class: "w-4 h-4 inline-block"}
 
-  def icon(%{name: "hero-" <> _} = assigns) do
+  def icon(assigns) do
+    assigns = assign_new(assigns, :"aria-hidden", fn -> !Map.has_key?(assigns, :"aria-label") end)
+
     ~H"""
-    <span class={[@name, @class]} />
+    <%= if @outlined do %>
+      <%= apply(Heroicons.Outline, @name, [Map.to_list(@rest)]) %>
+    <% else %>
+      <%= apply(Heroicons.Solid, @name, [Map.to_list(@rest)]) %>
+    <% end %>
     """
   end
 
@@ -636,5 +709,28 @@ defmodule NotSpotifyWeb.CoreComponents do
   """
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
+  end
+
+  def home_path(), do: "/"
+
+  def progress_bar(assigns) do
+    assigns = assign_new(assigns, :value, fn -> assigns[:min] || 0 end)
+
+    ~H"""
+    <div
+      id={"#{@id}-container"}
+      class="bg-gray-200 flex-auto dark:bg-black rounded-full overflow-hidden"
+      phx-update="ignore"
+    >
+      <div
+        id={@id}
+        class="bg-lime-500 dark:bg-lime-400 h-1.5 w-0"
+        data-min={@min}
+        data-max={@max}
+        data-val={@value}
+      >
+      </div>
+    </div>
+    """
   end
 end

@@ -3,15 +3,20 @@ defmodule NotSpotify.Repo.Migrations.CreateSongs do
 
   def change do
     create table(:songs) do
-      add :name, :string
-      add :year, :integer
-      add :content_location, :string
-      add :artist_id, references(:users, on_delete: :nothing)
+      add :title, :string, null: false
+      add :artist, :string, null: false
+      add :duration, :integer, default: 0, null: false
+      add :mp3_url, :string, null: false
+      add :mp3_filename, :string, null: false
+      add :mp3_filepath, :string, null: false
+      add :mp3_filesize, :integer, default: 0, null: false
+
+      add :user_id, references(:users, on_delete: :nothing)
 
       timestamps()
     end
 
-    create index(:songs, [:artist_id])
-    create unique_index(:songs, [:name, :artist_id])
+    create index(:songs, [:user_id])
+    create unique_index(:songs, [:title, :artist, :user_id])
   end
 end

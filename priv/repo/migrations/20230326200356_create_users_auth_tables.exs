@@ -9,6 +9,12 @@ defmodule NotSpotify.Repo.Migrations.CreateUsersAuthTables do
       add :hashed_password, :string, null: false
       add :confirmed_at, :naive_datetime
       add :username, :string, null: false
+
+      add :current_song_played_at, :naive_datetime
+      add :current_song_paused_at, :naive_datetime
+      add :current_song_id, :integer
+      add :current_song_status, :integer, default: 1, null: false
+
       timestamps()
     end
 
