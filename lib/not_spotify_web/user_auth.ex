@@ -1,4 +1,7 @@
 defmodule NotSpotifyWeb.UserAuth do
+  @moduledoc """
+  The UserAuth context.
+  """
   use NotSpotifyWeb, :verified_routes
 
   import Plug.Conn

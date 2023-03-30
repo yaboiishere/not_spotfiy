@@ -51,7 +51,9 @@ defmodule NotSpotify.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:heroicons, "~> 0.2.2"}
+      {:heroicons, "~> 0.2.2"},
+      {:credo, "~> 1.6"},
+      {:dialyxir, "~> 1.2.0", only: [:dev], runtime: false}
     ]
   end
 

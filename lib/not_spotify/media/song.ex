@@ -1,4 +1,7 @@
 defmodule NotSpotify.Media.Song do
+  @moduledoc """
+  The Song context.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

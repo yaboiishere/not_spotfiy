@@ -62,7 +62,7 @@ defmodule NotSpotify.Media do
     play_song(id)
   end
 
-  def play_song(id, user = %User{}) do
+  def play_song(id, %User{} = user) do
     song = get_song!(id)
 
     played_at =
@@ -123,12 +123,12 @@ defmodule NotSpotify.Media do
     broadcast!(user.id, %Events.Pause{song: user.current_song})
   end
 
-  def play_next_song([%Song{} = song | tail], user = %User{}) do
+  def play_next_song([%Song{} = song | tail], %User{} = user) do
     play_song(song, user)
     tail
   end
 
-  def play_prev_song([%Song{} = song | tail], user = %User{}) do
+  def play_prev_song([%Song{} = song | tail], %User{} = user) do
     play_song(song, user)
     tail
   end
@@ -178,16 +178,16 @@ defmodule NotSpotify.Media do
     # refetch user for fresh song count
     user = Accounts.get_user!(user.id)
 
-    multi =
-      Multi.new()
-      |> Ecto.Multi.run(:starting_position, fn repo, _changes ->
-        count = repo.one(from s in Song, where: s.user_id == ^user.id, select: count(s.id))
-        {:ok, count - 1}
-      end)
+    # multi =
+    #   Multi.new()
+    #   |> Ecto.Multi.run(:starting_position, fn repo, _changes ->
+    #     count = repo.one(from s in Song, where: s.user_id == ^user.id, select: count(s.id))
+    #     {:ok, count - 1}
+    #   end)
 
     multi =
       changesets
-      |> Enum.reduce(multi, fn {ref, chset}, acc ->
+      |> Enum.reduce(Multi.new(), fn {ref, chset}, acc ->
         Ecto.Multi.insert(acc, {:song, ref}, fn %{} ->
           chset
           |> Song.put_user(user)
@@ -200,7 +200,6 @@ defmodule NotSpotify.Media do
       {:ok, results} ->
         songs =
           results
-          |> IO.inspect()
           |> Enum.filter(&match?({{:song, _ref}, _}, &1))
           |> Enum.map(fn {{:song, ref}, song} ->
             consume_file.(ref, fn tmp_path -> store_mp3(song, tmp_path) end)

@@ -1,4 +1,7 @@
 defmodule NotSpotifyWeb.Telemetry do
+  @moduledoc """
+  Telemetry module for NotSpotifyWeb
+  """
   use Supervisor
   import Telemetry.Metrics
 

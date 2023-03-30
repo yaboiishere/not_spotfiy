@@ -1,4 +1,7 @@
 defmodule NotSpotify.Accounts.User do
+  @moduledoc """
+  The User context.
+  """
   use Ecto.Schema
   import Ecto.Changeset
   alias NotSpotify.Accounts.User

@@ -29,8 +29,7 @@ defmodule NotSpotify.MP3Stat do
     seconds = rem(duration - hours * 60 * 60 - minutes * 60, 60)
 
     [minutes, seconds]
-    |> Enum.map(fn count -> String.pad_leading("#{count}", 2, ["0"]) end)
-    |> Enum.join(":")
+    |> Enum.map_join(":", fn count -> String.pad_leading("#{count}", 2, ["0"]) end)
   end
 
   def parse(path) do
@@ -352,14 +351,14 @@ defmodule NotSpotify.MP3Stat do
   defp lookup_layer(0b11), do: :layer1
 
   defp lookup_sampling_rate(_version, 0b11), do: :invalid
-  defp lookup_sampling_rate(:version1, 0b00), do: 44100
-  defp lookup_sampling_rate(:version1, 0b01), do: 48000
-  defp lookup_sampling_rate(:version1, 0b10), do: 32000
-  defp lookup_sampling_rate(:version2, 0b00), do: 22050
-  defp lookup_sampling_rate(:version2, 0b01), do: 24000
-  defp lookup_sampling_rate(:version2, 0b10), do: 16000
-  defp lookup_sampling_rate(:version25, 0b00), do: 11025
-  defp lookup_sampling_rate(:version25, 0b01), do: 12000
+  defp lookup_sampling_rate(:version1, 0b00), do: 44_100
+  defp lookup_sampling_rate(:version1, 0b01), do: 48_000
+  defp lookup_sampling_rate(:version1, 0b10), do: 32_000
+  defp lookup_sampling_rate(:version2, 0b00), do: 22_050
+  defp lookup_sampling_rate(:version2, 0b01), do: 24_000
+  defp lookup_sampling_rate(:version2, 0b10), do: 16_000
+  defp lookup_sampling_rate(:version25, 0b00), do: 11_025
+  defp lookup_sampling_rate(:version25, 0b01), do: 12_000
   defp lookup_sampling_rate(:version25, 0b10), do: 8000
 
   defp lookup_bitrate(_version, _layer, 0), do: :invalid
