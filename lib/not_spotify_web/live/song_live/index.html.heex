@@ -12,9 +12,13 @@
   rows={@streams.songs}
   row_click={fn {_id, song} -> JS.navigate(~p"/songs/#{song}") end}
 >
-  <:col :let={{_id, song}} label="Name"><%= song.name %></:col>
-  <:col :let={{_id, song}} label="Year"><%= song.year %></:col>
-  <:col :let={{_id, song}} label="Artist"><%= song.artist.username %></:col>
+  <:col :let={{_id, song}} label="Title"><%= song.title %></:col>
+  <:col :let={{_id, song}} label="Artist"><%= song.artist %></:col>
+  <:col :let={{_id, song}} label="Genre"><%= song.genre %></:col>
+  <:col :let={{_id, song}} label="Album"><%= song.album_artist %></:col>
+  <:col :let={{_id, song}} label="Duration"><%= song.duration %></:col>
+  <:col :let={{_id, song}} label="Year"><%= song.date_released %></:col>
+  <:col :let={{_id, song}} label="Uploaded by"><%= song.user.username %></:col>
   <:action :let={{_id, song}}>
     <div class="sr-only">
       <.link navigate={~p"/songs/#{song}"}>Show</.link>
@@ -31,7 +35,7 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="song-modal" show on_cancel={JS.patch(~p"/songs")}>
+<.modal :if={@live_action in [:edit]} id="song-modal" show on_cancel={JS.patch(~p"/songs")}>
   <.live_component
     module={NotSpotifyWeb.SongLive.FormComponent}
     id={@song.id || :new}
@@ -42,3 +46,4 @@
     current_user={@current_user}
   />
 </.modal>
+

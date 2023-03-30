@@ -8,7 +8,7 @@ defmodule NotSpotify.Accounts do
 
   alias NotSpotify.Accounts.{User, UserToken, UserNotifier}
 
-  @pubsub LiveBeats.PubSub
+  @pubsub NotSpotify.PubSub
 
   def subscribe(user_id) do
     Phoenix.PubSub.subscribe(@pubsub, topic(user_id))

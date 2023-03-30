@@ -4,10 +4,14 @@ defmodule NotSpotify.Media do
   """
 
   import Ecto.Query, warn: false
+  alias NotSpotify.Accounts
+  alias Ecto.Repo
   alias NotSpotify.Repo
   alias NotSpotify.Media.Song
   alias NotSpotify.Media.Events
   alias NotSpotify.Accounts.User
+
+  alias NotSpotify.MP3Stat
 
   alias Ecto.Changeset
   alias Ecto.Multi
@@ -16,7 +20,7 @@ defmodule NotSpotify.Media do
   def list_songs do
     Song
     |> Repo.all()
-    |> Repo.preload(:artist)
+    |> Repo.preload(:user)
   end
 
   def get_song!(id), do: Repo.get!(Song, id)
@@ -37,8 +41,17 @@ defmodule NotSpotify.Media do
     Repo.delete(song)
   end
 
-  def change_song(%Song{} = song, attrs \\ %{}) do
+  def change_song(song_or_changeset, attrs \\ %{})
+
+  def change_song(%Song{} = song, attrs) do
     Song.changeset(song, attrs)
+  end
+
+  @keep_changes [:duration, :mp3_filesize, :mp3_filepath]
+  def change_song(%Ecto.Changeset{} = prev_changeset, attrs) do
+    %Song{}
+    |> change_song(attrs)
+    |> Ecto.Changeset.change(Map.take(prev_changeset.changes, @keep_changes))
   end
 
   defdelegate stopped?(user), to: User
@@ -143,9 +156,81 @@ defmodule NotSpotify.Media do
     Path.join([dir, "songs", filename_uuid])
   end
 
+  def parse_file_name(name) do
+    case Regex.split(~r/[-–]/, Path.rootname(name), parts: 2) do
+      [title] -> %{title: String.trim(title), artist: nil}
+      [title, artist] -> %{title: String.trim(title), artist: String.trim(artist)}
+    end
+  end
+
+  def put_stats(%Ecto.Changeset{} = changeset, %MP3Stat{} = stat) do
+    chset = Song.put_stats(changeset, stat)
+
+    if error = chset.errors[:duration] do
+      {:error, %{duration: error}}
+    else
+      {:ok, chset}
+    end
+  end
+
+  def import_songs(%User{} = user, changesets, consume_file)
+      when is_map(changesets) and is_function(consume_file, 2) do
+    # refetch user for fresh song count
+    user = Accounts.get_user!(user.id)
+
+    multi =
+      Multi.new()
+      |> Ecto.Multi.run(:starting_position, fn repo, _changes ->
+        count = repo.one(from s in Song, where: s.user_id == ^user.id, select: count(s.id))
+        {:ok, count - 1}
+      end)
+
+    multi =
+      changesets
+      |> Enum.reduce(multi, fn {ref, chset}, acc ->
+        Ecto.Multi.insert(acc, {:song, ref}, fn %{} ->
+          chset
+          |> Song.put_user(user)
+          |> Song.put_mp3_path()
+          |> Song.put_server_ip()
+        end)
+      end)
+
+    case Repo.transaction(multi) do
+      {:ok, results} ->
+        songs =
+          results
+          |> IO.inspect()
+          |> Enum.filter(&match?({{:song, _ref}, _}, &1))
+          |> Enum.map(fn {{:song, ref}, song} ->
+            consume_file.(ref, fn tmp_path -> store_mp3(song, tmp_path) end)
+            {ref, song}
+          end)
+
+        # broadcast_imported(user, songs)
+
+        {:ok, Enum.into(songs, %{})}
+
+      {:error, failed_op, failed_val, _changes} ->
+        failed_op =
+          case failed_op do
+            {:song, _number} -> "Invalid song (#{failed_val.changes.title})"
+            :is_songs_count_updated? -> :invalid
+            failed_op -> failed_op
+          end
+
+        {:error, {failed_op, failed_val}}
+    end
+  end
+
   defp broadcast!(user_id, msg) when is_integer(user_id) do
     Phoenix.PubSub.broadcast!(@pubsub, topic(user_id), {__MODULE__, msg})
   end
 
   defp topic(user_id) when is_integer(user_id), do: "profile:#{user_id}"
+
+  defp store_mp3(%Song{} = song, tmp_path) do
+    File.mkdir_p!(Path.dirname(song.mp3_filepath))
+    File.cp!(tmp_path, song.mp3_filepath)
+  end
 end

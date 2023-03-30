@@ -7,6 +7,13 @@
 # General application configuration
 import Config
 
+config :not_spotify, :files,
+  uploads_dir: Path.expand("../priv/uploads", __DIR__),
+  host: [scheme: "http", host: "localhost", port: 4000],
+  server_ip: "127.0.0.1",
+  hostname: "localhost",
+  transport_opts: []
+
 config :not_spotify,
   ecto_repos: [NotSpotify.Repo]
 

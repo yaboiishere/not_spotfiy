@@ -12,12 +12,14 @@ defmodule NotSpotify.Application do
       NotSpotifyWeb.Telemetry,
       # Start the Ecto repository
       NotSpotify.Repo,
+      {Task.Supervisor, name: NotSpotify.TaskSupervisor},
       # Start the PubSub system
       {Phoenix.PubSub, name: NotSpotify.PubSub},
       # Start Finch
       {Finch, name: NotSpotify.Finch},
       # Start the Endpoint (http/https)
       NotSpotifyWeb.Endpoint
+
       # Start a worker by calling: NotSpotify.Worker.start_link(arg)
       # {NotSpotify.Worker, arg}
     ]

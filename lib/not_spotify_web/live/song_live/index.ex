@@ -5,6 +5,9 @@ defmodule NotSpotifyWeb.SongLive.Index do
   alias NotSpotify.Media.Song
   alias NotSpotify.Accounts
 
+  alias NotSpotifyWeb.LayoutComponent
+  alias NotSpotifyWeb.SongLive.UploadFormComponent
+
   @impl true
   def mount(_params, %{"user_token" => user_token}, socket) do
     new_socket =
@@ -17,6 +20,7 @@ defmodule NotSpotifyWeb.SongLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
+    LayoutComponent.hide_modal()
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
@@ -30,6 +34,7 @@ defmodule NotSpotifyWeb.SongLive.Index do
     socket
     |> assign(:page_title, "New Song")
     |> assign(:song, %Song{})
+    |> show_upload_modal()
   end
 
   defp apply_action(socket, :index, _params) do
@@ -53,5 +58,18 @@ defmodule NotSpotifyWeb.SongLive.Index do
     {:ok, _} = Media.delete_song(song)
 
     {:noreply, stream_delete(socket, :songs, song)}
+  end
+
+  defp show_upload_modal(socket) do
+    LayoutComponent.show_modal(UploadFormComponent, %{
+      id: :new,
+      confirm: {"Save", type: "submit", form: "song-form"},
+      patch: "/",
+      song: socket.assigns.song,
+      title: socket.assigns.page_title,
+      current_user: socket.assigns.current_user
+    })
+
+    socket
   end
 end
