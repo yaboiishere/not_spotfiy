@@ -3,6 +3,7 @@ defmodule NotSpotifyWeb.SongLive.Show do
 
   alias NotSpotify.Media
   alias NotSpotify.Accounts
+  alias NotSpotify.Repo
 
   @impl true
   def mount(_params, %{"user_token" => user_token}, socket) do
@@ -12,10 +13,15 @@ defmodule NotSpotifyWeb.SongLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    song =
+      id
+      |> Media.get_song!()
+      |> Repo.preload(:user)
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:song, Media.get_song!(id))}
+     |> assign(:song, song)}
   end
 
   defp page_title(:show), do: "Show Song"

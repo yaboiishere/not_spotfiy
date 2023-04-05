@@ -9,9 +9,14 @@
 </.header>
 
 <.list>
-  <:item title="Name"><%= @song.name %></:item>
-  <:item title="Year"><%= @song.year %></:item>
-  <:item title="Content location"><%= @song.content_location %></:item>
+  <:item title="Name"><%= @song.title %></:item>
+  <:item title="Album Artist"><%= @song.album_artist %></:item>
+  <:item title="Date Recorded"><%= @song.date_recorded %></:item>
+  <:item title="Date Released"><%= @song.date_released %></:item>
+  <:item title="Artist"><%= @song.artist %></:item>
+  <:item title="Genre"><%= @song.genre %></:item>
+  <:item title="Duration"><%= @song.duration %></:item>
+  <:item title="Uploader"><%= @song.user.username%></:item>
 </.list>
 
 <.back navigate={~p"/songs"}>Back to songs</.back>

@@ -595,7 +595,7 @@ defmodule NotSpotifyWeb.CoreComponents do
         navigate={@navigate}
         class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
       >
-        <.icon name={:"hero-arrow-left-solid"} class="h-3 w-3" />
+        <!-- <.icon name={"hero-arrow-left-solid"} class="h-3 w-3" /> -->
         <%= render_slot(@inner_block) %>
       </.link>
     </div>
@@ -756,7 +756,9 @@ defmodule NotSpotifyWeb.CoreComponents do
   end
 
   def translate_changeset_errors(changeset) do
-    Enum.map_join(changeset.errors, "\n", fn {key, value} -> "#{key} #{translate_error(value)}" end)
+    Enum.map_join(changeset.errors, "\n", fn {key, value} ->
+      "#{key} #{translate_error(value)}"
+    end)
   end
 
   @doc """
