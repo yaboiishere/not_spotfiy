@@ -36,13 +36,17 @@ defmodule NotSpotify.Media.PlayingProcess do
     )
   end
 
+  def start_link(user) do
+    GenServer.start_link(__MODULE__, user, name: process_name(user))
+  end
+
   def init(user) do
     MusicBus.join(User.process_name(user))
     {:ok, %State{user: user}}
   end
 
   def process_name(%User{} = user) do
-    {:global, user.id}
+    {:global, user.email}
   end
 
   def handle_info({Media, %Events.Play{song: song}}, state) do

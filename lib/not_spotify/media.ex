@@ -151,15 +151,7 @@ defmodule NotSpotify.Media do
 
   def import_songs(%User{} = user, changesets, consume_file)
       when is_map(changesets) and is_function(consume_file, 2) do
-    # refetch user for fresh song count
     user = Accounts.get_user!(user.id)
-
-    # multi =
-    #   Multi.new()
-    #   |> Ecto.Multi.run(:starting_position, fn repo, _changes ->
-    #     count = repo.one(from s in Song, where: s.user_id == ^user.id, select: count(s.id))
-    #     {:ok, count - 1}
-    #   end)
 
     multi =
       changesets
@@ -181,8 +173,6 @@ defmodule NotSpotify.Media do
             consume_file.(ref, fn tmp_path -> store_mp3(song, tmp_path) end)
             {ref, song}
           end)
-
-        # broadcast_imported(user, songs)
 
         {:ok, Enum.into(songs, %{})}
 

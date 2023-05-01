@@ -3,7 +3,7 @@ defmodule NotSpotifyWeb.PlayerLive do
 
   alias NotSpotify.MusicBus
   alias NotSpotify.Accounts.User
-  alias NotSpotify.{Accounts, Media}
+  alias NotSpotify.Media
   alias NotSpotify.Media.Song
 
   on_mount {NotSpotifyWeb.UserAuth, :current_user}
@@ -139,10 +139,6 @@ defmodule NotSpotifyWeb.PlayerLive do
   def mount(_params, _session, socket) do
     %{current_user: current_user} = socket.assigns
 
-    if connected?(socket) do
-      Accounts.subscribe(current_user.id)
-    end
-
     socket =
       socket
       |> assign(
@@ -258,7 +254,7 @@ defmodule NotSpotifyWeb.PlayerLive do
     token =
       Phoenix.Token.encrypt(socket.endpoint, "file", %{
         vsn: 1,
-        # ip: to_string(song.server_ip),
+        ip: to_string(song.server_ip),
         size: song.mp3_filesize,
         uuid: song.mp3_filename
       })
@@ -266,7 +262,7 @@ defmodule NotSpotifyWeb.PlayerLive do
     push_event(socket, "play", %{
       artist: song.artist,
       title: song.title,
-      paused: User.paused?(socket.assigns.current_user),
+      paused: Media.paused?(socket.assigns.current_user),
       elapsed: elapsed,
       duration: song.duration,
       token: token,
