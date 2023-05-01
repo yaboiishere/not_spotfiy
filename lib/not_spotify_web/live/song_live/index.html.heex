@@ -33,6 +33,13 @@
       Delete
     </.link>
   </:action>
+  <:action :let={{_id, song}}>
+    <.link
+      phx-click={JS.push("play", value: %{id: song.id})}
+    >
+      Play
+    </.link>
+  </:action>
 </.table>
 
 <.modal :if={@live_action in [:edit]} id="song-modal" show on_cancel={JS.patch(~p"/songs")}>

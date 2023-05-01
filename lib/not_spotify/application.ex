@@ -19,7 +19,8 @@ defmodule NotSpotify.Application do
       {Finch, name: NotSpotify.Finch},
       # Start the Endpoint (http/https)
       NotSpotifyWeb.Endpoint,
-      %{id: :pg, start: {:pg, :start_link, []}}
+      %{id: :pg, start: {:pg, :start_link, []}},
+      {DynamicSupervisor, name: NotSpotify.Media.Supervisor}
 
       # Start a worker by calling: NotSpotify.Worker.start_link(arg)
       # {NotSpotify.Worker, arg}

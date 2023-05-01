@@ -10,6 +10,21 @@ defmodule NotSpotify.Media.Events do
 
   defmodule Pause do
     @moduledoc false
+    defstruct song: nil, paused_at: nil
+  end
+
+  defmodule Stop do
+    @moduledoc false
+    defstruct song: nil
+  end
+
+  defmodule Next do
+    @moduledoc false
+    defstruct song: nil
+  end
+
+  defmodule Prev do
+    @moduledoc false
     defstruct song: nil
   end
 end

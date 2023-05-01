@@ -41,86 +41,85 @@ defmodule NotSpotifyWeb.PlayerLive do
       </div>
       <div class="bg-gray-50 text-black dark:bg-gray-900 dark:text-white px-1 sm:px-3 lg:px-1 xl:px-3 grid grid-cols-5 items-center">
         <div class="mx-auto flex"></div>
-
-          <!-- prev -->
-          <button
-            type="button"
-            class="sm:block xl:block mx-auto scale-75"
-            phx-click={js_prev()}
-            aria-label="Previous"
-          >
-            <svg width="17" height="18">
-              <path d="M0 0h2v18H0V0zM4 9l13-9v18L4 9z" fill="currentColor" />
-            </svg>
-          </button>
-          <!-- /prev -->
+        <!-- prev -->
+        <button
+          type="button"
+          class="sm:block xl:block mx-auto scale-75"
+          phx-click={js_prev()}
+          aria-label="Previous"
+        >
+          <svg width="17" height="18">
+            <path d="M0 0h2v18H0V0zM4 9l13-9v18L4 9z" fill="currentColor" />
+          </svg>
+        </button>
+        <!-- /prev -->
 
           <!-- play/pause -->
-          <button
-            type="button"
-            class="mx-auto scale-75"
-            phx-click={js_play_pause()}
-            aria-label={
-              if @playing do
-                "Pause"
-              else
-                "Play"
-              end
-            }
-          >
-            <%= if @playing do %>
-              <svg id="player-pause" width="50" height="50" fill="none">
-                <circle
-                  class="text-gray-300 dark:text-gray-500"
-                  cx="25"
-                  cy="25"
-                  r="24"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-                <path d="M18 16h4v18h-4V16zM28 16h4v18h-4z" fill="currentColor" />
-              </svg>
-            <% else %>
-              <svg
-                id="player-play"
-                width="50"
-                height="50"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
+        <button
+          type="button"
+          class="mx-auto scale-75"
+          phx-click={js_play_pause()}
+          aria-label={
+            if @playing do
+              "Pause"
+            else
+              "Play"
+            end
+          }
+        >
+          <%= if @playing do %>
+            <svg id="player-pause" width="50" height="50" fill="none">
+              <circle
+                class="text-gray-300 dark:text-gray-500"
+                cx="25"
+                cy="25"
+                r="24"
                 stroke="currentColor"
-              >
-                <circle
-                  id="svg_1"
-                  stroke-width="0.8"
-                  stroke="currentColor"
-                  r="11.4"
-                  cy="12"
-                  cx="12"
-                  class="text-gray-300 dark:text-gray-500"
-                />
-                <path
-                  stroke="null"
-                  fill="currentColor"
-                  transform="rotate(90 12.8947 12.3097)"
-                  id="svg_6"
-                  d="m9.40275,15.10014l3.49194,-5.58088l3.49197,5.58088l-6.98391,0z"
-                  stroke-width="1.5"
-                  fill="none"
-                />
-              </svg>
-            <% end %>
-          </button>
-          <!-- /play/pause -->
+                stroke-width="1.5"
+              />
+              <path d="M18 16h4v18h-4V16zM28 16h4v18h-4z" fill="currentColor" />
+            </svg>
+          <% else %>
+            <svg
+              id="player-play"
+              width="50"
+              height="50"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <circle
+                id="svg_1"
+                stroke-width="0.8"
+                stroke="currentColor"
+                r="11.4"
+                cy="12"
+                cx="12"
+                class="text-gray-300 dark:text-gray-500"
+              />
+              <path
+                stroke="null"
+                fill="currentColor"
+                transform="rotate(90 12.8947 12.3097)"
+                id="svg_6"
+                d="m9.40275,15.10014l3.49194,-5.58088l3.49197,5.58088l-6.98391,0z"
+                stroke-width="1.5"
+                fill="none"
+              />
+            </svg>
+          <% end %>
+        </button>
+        <!-- /play/pause -->
 
           <!-- next -->
-          <button type="button" class="mx-auto scale-75" phx-click={js_next()} aria-label="Next">
-            <svg width="17" height="18" viewBox="0 0 17 18" fill="none">
-              <path d="M17 0H15V18H17V0Z" fill="currentColor" />
-              <path d="M13 9L0 0V18L13 9Z" fill="currentColor" />
-            </svg>
-          </button>
-          <!-- next -->
+        <button type="button" class="mx-auto scale-75" phx-click={js_next()} aria-label="Next">
+          <svg width="17" height="18" viewBox="0 0 17 18" fill="none">
+            <path d="M17 0H15V18H17V0Z" fill="currentColor" />
+            <path d="M13 9L0 0V18L13 9Z" fill="currentColor" />
+          </svg>
+        </button>
+        <!-- next -->
       </div>
 
       <.modal
@@ -132,7 +131,6 @@ defmodule NotSpotifyWeb.PlayerLive do
         Your browser needs a click event to enable playback
         <:confirm>Listen Now</:confirm>
       </.modal>
-
     </div>
     <!-- /player -->
     """
@@ -158,21 +156,21 @@ defmodule NotSpotifyWeb.PlayerLive do
 
     MusicBus.join(User.process_name(current_user))
 
-
     {:ok, socket, layout: false, temporary_assigns: []}
   end
 
   def handle_event("play_pause", _, socket) do
     %{song: song, playing: playing} = socket.assigns
     song = Media.get_song!(song.id)
+    current_user = socket.assigns.current_user
 
     cond do
       song && playing ->
-        Media.pause_song(song)
+        Media.pause_song(current_user)
         {:noreply, assign(socket, playing: false)}
 
       song ->
-        Media.play_song(song)
+        Media.play_song(song, current_user)
         {:noreply, assign(socket, playing: true)}
 
       true ->
@@ -217,11 +215,12 @@ defmodule NotSpotifyWeb.PlayerLive do
     {:noreply, push_pause(socket)}
   end
 
-  def handle_info({Media, %Media.Events.Play{} = play}, socket) do
+  def handle_info({Media, %NotSpotify.Media.Events.Play{} = play}, socket) do
     {:noreply, play_song(socket, play.song, play.elapsed)}
   end
 
   def handle_info({Media, _}, socket), do: {:noreply, socket}
+  def handle_info({:update, _}, socket), do: {:noreply, socket}
 
   defp play_song(socket, %Song{} = song, elapsed) do
     socket
