@@ -55,7 +55,7 @@ defmodule NotSpotifyWeb do
       @opts Keyword.merge(
               [
                 layout: {NotSpotifyWeb.Layouts, :live},
-                container: {:div, class: "relative h-screen overflow-hidden bg-white"}
+                container: {:div, class: "h-screen overflow-hidden bg-white"}
               ],
               unquote(opts)
             )

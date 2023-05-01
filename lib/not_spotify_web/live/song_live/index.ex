@@ -1,18 +1,25 @@
 defmodule NotSpotifyWeb.SongLive.Index do
   use NotSpotifyWeb, :live_view
 
+  alias NotSpotify.MusicBus
   alias NotSpotify.Media
   alias NotSpotify.Media.Song
   alias NotSpotify.Accounts
+  alias NotSpotify.Accounts.User
+  alias NotSpotify.Repo
 
   alias NotSpotifyWeb.LayoutComponent
   alias NotSpotifyWeb.SongLive.UploadFormComponent
 
   @impl true
   def mount(_params, %{"user_token" => user_token}, socket) do
+    current_user = Accounts.get_user_by_session_token(user_token)
+
+    MusicBus.join(User.process_name(current_user))
+
     new_socket =
       socket
-      |> assign(:current_user, Accounts.get_user_by_session_token(user_token))
+      |> assign(:current_user, current_user)
       |> stream(:songs, Media.list_songs())
 
     {:ok, new_socket}
@@ -49,7 +56,20 @@ defmodule NotSpotifyWeb.SongLive.Index do
 
   @impl true
   def handle_info({NotSpotifyWeb.SongLive.FormComponent, {:saved, song}}, socket) do
+    User
+    |> Repo.all()
+    |> Enum.each(fn user ->
+      MusicBus.broadcast(User.process_name(user), {:update, :index})
+    end)
+
     {:noreply, stream_insert(socket, :songs, song)}
+  end
+
+  @impl true
+  def handle_info({:update, :index}, socket) do
+    
+    new_socket = stream(socket, :songs, Media.list_songs())
+    {:noreply, new_socket}
   end
 
   @impl true

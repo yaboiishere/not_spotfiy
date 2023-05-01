@@ -146,7 +146,7 @@ defmodule NotSpotifyWeb.UserAuth do
         live "/profile", ProfileLive, :index
       end
   """
-  def on_mount(:mount_current_user, _params, session, socket) do
+  def on_mount(:current_user, _params, session, socket) do
     {:cont, mount_current_user(session, socket)}
   end
 

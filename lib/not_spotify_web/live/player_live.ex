@@ -1,6 +1,7 @@
 defmodule NotSpotifyWeb.PlayerLive do
   use NotSpotifyWeb, {:live_view, container: {:div, []}}
 
+  alias NotSpotify.MusicBus
   alias NotSpotify.Accounts.User
   alias NotSpotify.{Accounts, Media}
   alias NotSpotify.Media.Song
@@ -41,7 +42,6 @@ defmodule NotSpotifyWeb.PlayerLive do
       <div class="bg-gray-50 text-black dark:bg-gray-900 dark:text-white px-1 sm:px-3 lg:px-1 xl:px-3 grid grid-cols-5 items-center">
         <div class="mx-auto flex"></div>
 
-        <%= if is_nil(@user) or @own_profile? do %>
           <!-- prev -->
           <button
             type="button"
@@ -121,20 +121,6 @@ defmodule NotSpotifyWeb.PlayerLive do
             </svg>
           </button>
           <!-- next -->
-        <% else %>
-          <button type="button" class="mx-auto scale-75"></button>
-          <!-- stop button -->
-          <button
-            type="button"
-            class="mx-auto scale-75"
-            phx-click={
-              JS.push("switch_profile", value: %{user_id: nil}, target: "#player", loading: "#player")
-            }
-          >
-            <.icon name={:stop} class="h-12 w-12" />
-          </button>
-          <!-- stop button -->
-        <% end %>
       </div>
 
       <.modal
@@ -147,13 +133,6 @@ defmodule NotSpotifyWeb.PlayerLive do
         <:confirm>Listen Now</:confirm>
       </.modal>
 
-      <%= if @user do %>
-        <.modal id="not-authorized" on_confirm={hide_modal("not-authorized")}>
-          <:title>You can't do that</:title>
-          Only <%= @user.username %> can control playback
-          <:confirm>Ok</:confirm>
-        </.modal>
-      <% end %>
     </div>
     <!-- /player -->
     """
@@ -176,6 +155,9 @@ defmodule NotSpotifyWeb.PlayerLive do
         own_profile?: false,
         song_queue: []
       )
+
+    MusicBus.join(User.process_name(current_user))
+
 
     {:ok, socket, layout: false, temporary_assigns: []}
   end

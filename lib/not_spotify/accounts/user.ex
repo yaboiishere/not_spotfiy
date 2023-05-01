@@ -25,6 +25,8 @@ defmodule NotSpotify.Accounts.User do
     timestamps()
   end
 
+  def process_name(%User{} = user), do: {:user, user.email}
+
   def playing?(%User{} = user), do: user.current_song_status == :playing
   def paused?(%User{} = user), do: user.current_song_status == :paused
   def stopped?(%User{} = user), do: user.current_song_status == :stopped

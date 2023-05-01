@@ -1,6 +1,9 @@
 defmodule NotSpotifyWeb.SongLive.UploadFormComponent do
   use NotSpotifyWeb, :live_component
 
+  alias NotSpotify.Repo
+  alias NotSpotify.Accounts.User
+  alias NotSpotify.MusicBus
   alias NotSpotifyWeb.SongLive.SongEntryComponent
   alias NotSpotify.Media.Song
   alias NotSpotify.{Media, MP3Stat}
@@ -62,6 +65,12 @@ defmodule NotSpotifyWeb.SongLive.UploadFormComponent do
     else
       case Media.import_songs(current_user, changesets, &consume_entry(socket, &1, &2)) do
         {:ok, songs} ->
+          User
+          |> Repo.all()
+          |> Enum.map(fn user ->
+            MusicBus.broadcast(User.process_name(user), {:update, :index})
+          end)
+
           {:noreply,
            socket
            |> put_flash(:info, "#{map_size(songs)} song(s) uploaded")

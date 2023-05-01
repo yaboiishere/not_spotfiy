@@ -18,7 +18,8 @@ defmodule NotSpotify.Application do
       # Start Finch
       {Finch, name: NotSpotify.Finch},
       # Start the Endpoint (http/https)
-      NotSpotifyWeb.Endpoint
+      NotSpotifyWeb.Endpoint,
+      %{id: :pg, start: {:pg, :start_link, []}}
 
       # Start a worker by calling: NotSpotify.Worker.start_link(arg)
       # {NotSpotify.Worker, arg}
