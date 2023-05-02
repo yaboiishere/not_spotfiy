@@ -81,6 +81,8 @@ defmodule NotSpotifyWeb.Router do
   scope "/", NotSpotifyWeb do
     pipe_through [:browser]
 
+    get "/files/:id", FileController, :show
+
     delete "/users/log_out", UserSessionController, :delete
 
     live_session :current_user,

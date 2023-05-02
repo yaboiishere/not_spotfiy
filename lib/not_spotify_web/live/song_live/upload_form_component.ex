@@ -68,7 +68,7 @@ defmodule NotSpotifyWeb.SongLive.UploadFormComponent do
           User
           |> Repo.all()
           |> Enum.map(fn user ->
-            MusicBus.broadcast(User.process_name(user), {:update, :index})
+            MusicBus.broadcast(User.process_name(user), {:update, :index, songs})
           end)
 
           {:noreply,

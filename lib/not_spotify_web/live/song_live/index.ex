@@ -6,7 +6,6 @@ defmodule NotSpotifyWeb.SongLive.Index do
   alias NotSpotify.Media.Song
   alias NotSpotify.Accounts
   alias NotSpotify.Accounts.User
-  alias NotSpotify.Repo
 
   alias NotSpotifyWeb.LayoutComponent
   alias NotSpotifyWeb.SongLive.UploadFormComponent
@@ -56,20 +55,17 @@ defmodule NotSpotifyWeb.SongLive.Index do
 
   @impl true
   def handle_info({NotSpotifyWeb.SongLive.FormComponent, {:saved, song}}, socket) do
-    User
-    |> Repo.all()
-    |> Enum.each(fn user ->
-      MusicBus.broadcast(User.process_name(user), {:update, :index})
-    end)
-
     {:noreply, stream_insert(socket, :songs, song)}
   end
 
   @impl true
-  def handle_info({:update, :index}, socket) do
-    
-    new_socket = stream(socket, :songs, Media.list_songs())
+  def handle_info({:update, :index, songs}, socket) do
+    new_socket = stream_insert(socket, :songs, songs)
     {:noreply, new_socket}
+  end
+
+  def handle_info({Media, _}, socket) do
+    {:noreply, socket}
   end
 
   @impl true
@@ -78,6 +74,14 @@ defmodule NotSpotifyWeb.SongLive.Index do
     {:ok, _} = Media.delete_song(song)
 
     {:noreply, stream_delete(socket, :songs, song)}
+  end
+
+  def handle_event("play", %{"id" => id}, socket) do
+    current_user = socket.assigns.current_user
+    song = Media.get_song!(id)
+    Media.play_song(song, current_user)
+
+    {:noreply, assign(socket, song: song, playing: true)}
   end
 
   defp show_upload_modal(socket) do

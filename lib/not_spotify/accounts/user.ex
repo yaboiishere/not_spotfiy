@@ -13,23 +13,10 @@ defmodule NotSpotify.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
 
-    field :current_song_status, Ecto.Enum,
-      values: [stopped: 1, playing: 2, paused: 3],
-      default: :stopped
-
-    field :current_song_played_at, :naive_datetime
-    field :current_song_paused_at, :naive_datetime
-
-    has_one :current_song, NotSpotify.Media.Song, foreign_key: :id
-
     timestamps()
   end
 
   def process_name(%User{} = user), do: {:user, user.email}
-
-  def playing?(%User{} = user), do: user.current_song_status == :playing
-  def paused?(%User{} = user), do: user.current_song_status == :paused
-  def stopped?(%User{} = user), do: user.current_song_status == :stopped
 
   @doc """
   A user changeset for registration.
