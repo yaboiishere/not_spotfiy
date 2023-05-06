@@ -10,20 +10,27 @@ defmodule NotSpotify.Media.Events do
 
   defmodule Pause do
     @moduledoc false
-    defstruct song: nil, paused_at: nil
+    defstruct paused_at: nil
   end
 
   defmodule Stop do
     @moduledoc false
-    defstruct song: nil
   end
 
   defmodule Next do
     @moduledoc false
-    defstruct song: nil
   end
 
   defmodule Prev do
+    @moduledoc false
+  end
+
+  defmodule NextCallback do
+    @moduledoc false
+    defstruct song: nil
+  end
+
+  defmodule PrevCallback do
     @moduledoc false
     defstruct song: nil
   end
@@ -31,5 +38,9 @@ defmodule NotSpotify.Media.Events do
   defmodule AddToQueue do
     @moduledoc false
     defstruct song: nil
+  end
+
+  defmodule ClearQueue do
+    @moduledoc false
   end
 end
