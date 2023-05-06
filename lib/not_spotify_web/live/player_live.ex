@@ -1,6 +1,7 @@
 defmodule NotSpotifyWeb.PlayerLive do
   use NotSpotifyWeb, {:live_view, container: {:div, []}}
 
+  alias NotSpotify.Media.PlayingProcess
   alias NotSpotify.MusicBus
   alias NotSpotify.Accounts.User
   alias NotSpotify.Media
@@ -147,7 +148,8 @@ defmodule NotSpotifyWeb.PlayerLive do
         playing: false,
         current_user_id: current_user.id,
         own_profile?: false,
-        song_queue: []
+        song_queue: PlayingProcess.song_queue(current_user),
+        songs: Media.list_songs()
       )
 
     MusicBus.join(User.process_name(current_user))
@@ -156,9 +158,15 @@ defmodule NotSpotifyWeb.PlayerLive do
   end
 
   def handle_event("play_pause", _, socket) do
-    %{song: song, playing: playing} = socket.assigns
-    song = Media.get_song!(song.id)
+    %{song: song, playing: playing, songs: songs} = socket.assigns
     current_user = socket.assigns.current_user
+    process_active_song = PlayingProcess.active_song(current_user)
+
+    song = cond do
+      is_nil(song) && is_nil(process_active_song) -> List.first(songs)
+      is_nil(song) && process_active_song -> PlayingProcess.active_song(current_user)
+      true -> song
+    end
 
     cond do
       song && playing ->
@@ -175,20 +183,20 @@ defmodule NotSpotifyWeb.PlayerLive do
   end
 
   def handle_event("next_song", _, socket) do
-    %{song: song, song_queue: song_queue, current_user: current_user} = socket.assigns
+    %{song: song, current_user: current_user} = socket.assigns
 
     if song do
-      Media.play_next_song(song_queue, current_user)
+      Media.play_next_song(current_user)
     end
 
     {:noreply, socket}
   end
 
   def handle_event("prev_song", _, socket) do
-    %{song: song, song_queue: song_queue, current_user: current_user} = socket.assigns
+    %{song: song, current_user: current_user} = socket.assigns
 
     if song do
-      Media.play_prev_song(song_queue, current_user)
+      Media.play_prev_song(current_user)
     end
 
     {:noreply, socket}
@@ -196,8 +204,7 @@ defmodule NotSpotifyWeb.PlayerLive do
 
   def handle_event("next_song_auto", _, socket) do
     if socket.assigns.song do
-      # Media.play_next_song_auto(socket.assigns.song_queue)
-      Media.play_next_song(socket.assigns.song_queue, socket.assigns.current_user)
+      Media.play_next_song(socket.assigns.current_user)
     end
 
     {:noreply, socket}
@@ -211,7 +218,7 @@ defmodule NotSpotifyWeb.PlayerLive do
     {:noreply, push_pause(socket)}
   end
 
-  def handle_info({Media, %NotSpotify.Media.Events.Play{} = play}, socket) do
+  def handle_info({Media, %Media.Events.Play{} = play}, socket) do
     {:noreply, play_song(socket, play.song, play.elapsed)}
   end
 

@@ -12,6 +12,7 @@ defmodule NotSpotify.Media do
   alias NotSpotify.Media.Song
   alias NotSpotify.Media.Events
   alias NotSpotify.Accounts.User
+  alias NotSpotify.Media
 
   alias NotSpotify.MP3Stat
 
@@ -75,7 +76,7 @@ defmodule NotSpotify.Media do
 
     MusicBus.broadcast(
       User.process_name(user),
-      {NotSpotify.Media, %Events.Play{song: song, elapsed: 0}}
+      {Media, %Events.Play{song: song, elapsed: 0}}
     )
 
     song
@@ -86,18 +87,22 @@ defmodule NotSpotify.Media do
 
     MusicBus.broadcast(
       User.process_name(user),
-      {NotSpotify.Media, %Events.Pause{paused_at: now}}
+      {Media, %Events.Pause{paused_at: now}}
     )
   end
 
-  def play_next_song([%Song{} = song | tail], %User{} = user) do
-    play_song(song, user)
-    tail
+  def play_next_song(%User{} = user) do
+    MusicBus.broadcast(
+      User.process_name(user),
+      {Media, %Events.Next{}}
+    )
   end
 
-  def play_prev_song([%Song{} = song | tail], %User{} = user) do
-    play_song(song, user)
-    tail
+  def play_prev_song(%User{} = user) do
+    MusicBus.broadcast(
+      User.process_name(user),
+      {Media, %Events.Prev{}}
+    )
   end
 
   def get_current_active_song(%User{} = user) do

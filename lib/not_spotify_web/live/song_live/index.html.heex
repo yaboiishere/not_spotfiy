@@ -40,6 +40,13 @@
       Play
     </.link>
   </:action>
+  <:action :let={{_id, song}}>
+    <.link
+      phx-click={JS.push("addToQueue", value: %{id: song.id})}
+      >
+      Add to Queue
+    </.link>
+  </:action>
 </.table>
 
 <.modal :if={@live_action in [:edit]} id="song-modal" show on_cancel={JS.patch(~p"/songs")}>

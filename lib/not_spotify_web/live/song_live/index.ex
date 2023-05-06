@@ -1,6 +1,7 @@
 defmodule NotSpotifyWeb.SongLive.Index do
   use NotSpotifyWeb, :live_view
 
+  alias NotSpotify.Media.Events
   alias NotSpotify.MusicBus
   alias NotSpotify.Media
   alias NotSpotify.Media.Song
@@ -82,6 +83,14 @@ defmodule NotSpotifyWeb.SongLive.Index do
     Media.play_song(song, current_user)
 
     {:noreply, assign(socket, song: song, playing: true)}
+  end
+
+  def handle_event("addToQueue", %{"id" => id}, socket) do
+    song = Media.get_song!(id)
+    current_user = socket.assigns.current_user
+    MusicBus.broadcast(User.process_name(current_user), {Media, %Events.AddToQueue{song: song}})
+
+    {:noreply, socket}
   end
 
   defp show_upload_modal(socket) do

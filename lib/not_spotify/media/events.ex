@@ -27,4 +27,9 @@ defmodule NotSpotify.Media.Events do
     @moduledoc false
     defstruct song: nil
   end
+
+  defmodule AddToQueue do
+    @moduledoc false
+    defstruct song: nil
+  end
 end
