@@ -48,7 +48,8 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("APP_NAME") <> ".gigalixirapp.com"
+  giga_host = System.get_env("APP_NAME") <> ".gigalixirapp.com"
+  host = System.get_env("HOSTNAME") || giga_host
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :not_spotify, NotSpotifyWeb.Endpoint,
