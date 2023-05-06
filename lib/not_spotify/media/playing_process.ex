@@ -27,7 +27,7 @@ defmodule NotSpotify.Media.PlayingProcess do
   end
 
   defmodule State do
-    defstruct song: nil, playing: false, song_queue: [], user: nil, history: []
+    defstruct song: nil, playing: false, song_queue: [], user: nil, history: [], song_ref: nil
   end
 
   def start(user) do
@@ -55,60 +55,82 @@ defmodule NotSpotify.Media.PlayingProcess do
   end
 
   def handle_info({Media, %Events.Play{song: nil}}, state) do
-    Process.send(self(), {Media, %Events.Stop{}}, [])
+    Process.send(self(), {Media, Events.Stop}, [])
     {:noreply, state}
   end
 
   def handle_info({Media, %Events.Play{song: song}}, state) do
-    Process.send_after(self(), {:stop_song, song}, song.duration)
-    {:noreply, %{state | song: song, playing: true}}
+    ref = make_ref()
+    Process.send_after(self(), {:stop_song, ref}, :timer.seconds(song.duration))
+    {:noreply, %State{state | song: song, playing: true, song_ref: ref}}
   end
 
   def handle_info({Media, %Events.Pause{}}, state) do
-    {:noreply, %{state | playing: false}}
+    {:noreply, %State{state | playing: false}}
   end
 
-  def handle_info({Media, %Events.Stop{}}, state) do
+  def handle_info({Media, Events.Stop}, state) do
     {:noreply, %{state | song: nil, playing: false}}
   end
 
-  def handle_info({Media, %Events.AddToQueue{song: song}}, state) do
-    {:noreply, %{state | song_queue: [song | state.song_queue]}}
+  def handle_info({Media, %Events.AddToQueue{song: song}}, %State{song_queue: song_queue} = state) do
+    {:noreply, %{state | song_queue: song_queue ++ [song]}}
   end
 
-  def handle_info({Media, %Events.Next{}}, %State{song_queue: []} = state) do
+  def handle_info({Media, Events.Next}, %State{song_queue: [], user: user} = state) do
+    broadcast_stop(user)
     {:noreply, state}
   end
 
-  def handle_info({Media, %Events.Next{}}, %State{song: nil} = state) do
-    Process.send(self(), {Media, %Events.Stop{}}, [])
+  def handle_info({Media, Events.Next}, %State{song: nil, user: user} = state) do
+    broadcast_stop(user)
     {:noreply, state}
   end
 
-  def handle_info({Media, %Events.Next{}}, %State{song: song, song_queue: [next | rest], history: history} = state) do
-    new_state = %State{state | song_queue: rest, history: [song | history] }
+  def handle_info(
+        {Media, Events.Next},
+        %State{song: song, song_queue: [next | rest], history: history, user: user} = state
+      ) do
+    new_state = %State{state | song_queue: rest, history: [song | history], song: next}
     Process.send(self(), {Media, %Events.Play{song: next}}, [])
-    
+    MusicBus.broadcast(User.process_name(user), {Media, %Events.NextCallback{song: next}})
+
     {:noreply, new_state}
   end
 
-  def handle_info({Media, %Events.Prev{}}, %State{history: []} = state) do
+  def handle_info({Media, Events.Prev}, %State{history: []} = state) do
     {:noreply, state}
   end
 
-  def handle_info({Media, %Events.Prev{}}, %State{song: nil} = state) do
-    Process.send(self(), {Media, %Events.Stop{}}, [])
+  def handle_info({Media, Events.Prev}, %State{song: nil} = state) do
+    Process.send(self(), {Media, Events.Stop}, [])
     {:noreply, state}
   end
 
-  def handle_info({Media, %Events.Prev{}}, %State{history: [prev | rest]} = state) do
-    new_state = %State{state | song_queue: [prev | state.song_queue], history: rest}
+  def handle_info(
+        {Media, Events.Prev},
+        %State{history: [prev | rest], song_queue: song_queue, user: user, song: song} = state
+      ) do
+    new_state = %State{state | song_queue: [song | song_queue], history: rest, song: prev}
     Process.send(self(), {Media, %Events.Play{song: prev}}, [])
-    
+    MusicBus.broadcast(User.process_name(user), {Media, %Events.PrevCallback{song: prev}})
+
     {:noreply, new_state}
   end
 
-  def handle_info({:stop_song, song}, %State{song: song} = state) do
+  def handle_info({Media, %Events.NextCallback{}}, state) do
+    {:noreply, state}
+  end
+
+  def handle_info({Media, %Events.PrevCallback{}}, state) do
+    {:noreply, state}
+  end
+
+  def handle_info({Media, Events.ClearQueue}, state) do
+    {:noreply, %{state | song_queue: []}}
+  end
+
+  def handle_info({:stop_song, ref}, %State{song_ref: ref} = state) do
     {:noreply, %{state | song: nil, playing: false}}
   end
 
@@ -140,5 +162,9 @@ defmodule NotSpotify.Media.PlayingProcess do
       :undefined ->
         start(email)
     end
+  end
+
+  def broadcast_stop(user) do
+    MusicBus.broadcast(User.process_name(user), {Media, Events.Stop})
   end
 end

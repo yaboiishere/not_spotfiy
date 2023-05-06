@@ -94,14 +94,14 @@ defmodule NotSpotify.Media do
   def play_next_song(%User{} = user) do
     MusicBus.broadcast(
       User.process_name(user),
-      {Media, %Events.Next{}}
+      {Media, Events.Next}
     )
   end
 
   def play_prev_song(%User{} = user) do
     MusicBus.broadcast(
       User.process_name(user),
-      {Media, %Events.Prev{}}
+      {Media, Events.Prev}
     )
   end
 

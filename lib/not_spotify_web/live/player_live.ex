@@ -7,13 +7,13 @@ defmodule NotSpotifyWeb.PlayerLive do
   alias NotSpotify.Media
   alias NotSpotify.Media.Song
 
-  on_mount {NotSpotifyWeb.UserAuth, :current_user}
+  on_mount({NotSpotifyWeb.UserAuth, :current_user})
 
   def render(assigns) do
     ~H"""
     <!-- player -->
     <div id="audio-player" phx-hook="AudioPlayer" class="w-full" role="region" aria-label="Player">
-      <div id="audio-ignore" phx-update="ignore">
+      <div id="audio-ignore" phx-update="replace">
         <audio></audio>
       </div>
       <div class="bg-white dark:bg-gray-800 p-4">
@@ -121,6 +121,17 @@ defmodule NotSpotifyWeb.PlayerLive do
           </svg>
         </button>
         <!-- next -->
+        <button
+          type="button"
+          class="mx-auto scale-75"
+          phx-click="clear_queue"
+          aria-label="Clear Queue"
+        >
+          <svg width="17" height="18" viewBox="0 0 17 18" fill="none">
+            <path d="M17 0H15V18H17V0Z" fill="currentColor" />
+            <path d="M13 9L0 0V18L13 9Z" fill="currentColor" />
+          </svg>
+        </button>
       </div>
 
       <.modal
@@ -162,11 +173,12 @@ defmodule NotSpotifyWeb.PlayerLive do
     current_user = socket.assigns.current_user
     process_active_song = PlayingProcess.active_song(current_user)
 
-    song = cond do
-      is_nil(song) && is_nil(process_active_song) -> List.first(songs)
-      is_nil(song) && process_active_song -> PlayingProcess.active_song(current_user)
-      true -> song
-    end
+    song =
+      cond do
+        is_nil(song) && is_nil(process_active_song) -> List.first(songs)
+        is_nil(song) && process_active_song -> PlayingProcess.active_song(current_user)
+        true -> song
+      end
 
     cond do
       song && playing ->
@@ -210,6 +222,13 @@ defmodule NotSpotifyWeb.PlayerLive do
     {:noreply, socket}
   end
 
+  def handle_event("clear_queue", _, socket) do
+    current_user = socket.assigns.current_user
+    MusicBus.broadcast(User.process_name(current_user), {Media, Media.Events.ClearQueue})
+
+    {:noreply, socket}
+  end
+
   def handle_info(:play_current, socket) do
     {:noreply, play_current_song(socket)}
   end
@@ -222,6 +241,18 @@ defmodule NotSpotifyWeb.PlayerLive do
     {:noreply, play_song(socket, play.song, play.elapsed)}
   end
 
+  def handle_info({Media, %Media.Events.NextCallback{song: song}}, socket) do
+    {:noreply, play_song(socket, song, 0)}
+  end
+
+  def handle_info({Media, %Media.Events.PrevCallback{song: song}}, socket) do
+    {:noreply, play_song(socket, song, 0)}
+  end
+
+  def handle_info({Media, Media.Events.Stop}, socket) do
+    {:noreply, stop_song(socket)}
+  end
+
   def handle_info({Media, _}, socket), do: {:noreply, socket}
   def handle_info({:update, _}, socket), do: {:noreply, socket}
 
@@ -231,11 +262,11 @@ defmodule NotSpotifyWeb.PlayerLive do
     |> assign(song: song, playing: true, page_title: song_title(song))
   end
 
-  # defp stop_song(socket) do
-  #   socket
-  #   |> push_event("stop", %{})
-  #   |> assign(song: nil, playing: false, page_title: "Listing Songs")
-  # end
+  defp stop_song(socket) do
+    socket
+    |> push_event("stop", %{})
+    |> assign(song: nil, playing: false, page_title: "Listing Songs")
+  end
 
   defp song_title(%{artist: artist, title: title}) do
     "#{title} - #{artist} (Now Playing)"
