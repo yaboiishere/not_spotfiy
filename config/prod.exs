@@ -25,3 +25,10 @@ config :logger, level: :info
 config :not_spotify, NotSpotify.Repo,
   url: System.get_env("DATABASE_URL"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "2")
+
+config :not_spotify, :files,
+  uploads_dir: Path.expand("../priv/uploads", __DIR__),
+  host: [scheme: "https", host: "mitu.gigalixirapp.com", port: 443],
+  server_ip: "0.0.0.0",
+  hostname: "mitu.gigalixirapp.com",
+  transport_opts: []
