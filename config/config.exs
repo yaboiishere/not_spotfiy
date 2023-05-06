@@ -9,9 +9,9 @@ import Config
 
 config :not_spotify, :files,
   uploads_dir: Path.expand("../priv/uploads", __DIR__),
-  host: [scheme: "http", host: "localhost", port: 4000],
+  host: [scheme: "https", host: "mitu.gigalixirapp.com", port: 4000],
   server_ip: "0.0.0.0",
-  hostname: "localhost",
+  hostname: "mitu.gigalixirapp.com",
   transport_opts: []
 
 config :not_spotify,
