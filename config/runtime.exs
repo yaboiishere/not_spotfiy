@@ -61,7 +61,7 @@ if config_env() == :prod do
 
   config :not_spotify, :files,
     uploads_dir: Path.join([:code.priv_dir(:not_spotify), "uploads"]),
-    host: [scheme: "https", host: host, port: port],
+    host: [scheme: "https", host: host, port: 443],
     server_ip: "0.0.0.0",
     hostname: host,
     transport_opts: []

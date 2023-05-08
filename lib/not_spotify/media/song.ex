@@ -7,6 +7,21 @@ defmodule NotSpotify.Media.Song do
 
   alias NotSpotify.Accounts
 
+  @attrs [
+    :title,
+    :album_artist,
+    :date_recorded,
+    :date_released,
+    :artist,
+    :genre,
+    :duration,
+    :mp3_url,
+    :mp3_filename,
+    :mp3_filepath,
+    :mp3_filesize,
+    :server_ip
+  ]
+
   schema "songs" do
     field(:title, :string)
     field(:album_artist, :string)
@@ -29,7 +44,7 @@ defmodule NotSpotify.Media.Song do
   @doc false
   def changeset(song, attrs) do
     song
-    |> cast(attrs, [:album_artist, :artist, :title, :date_recorded, :date_released, :genre])
+    |> cast(attrs, @attrs)
     |> validate_required([:artist, :title])
     |> unique_constraint(:title,
       message: "is a duplicated from another song",
