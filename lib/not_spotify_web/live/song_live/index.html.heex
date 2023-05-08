@@ -34,16 +34,12 @@
     </.link>
   </:action>
   <:action :let={{_id, song}}>
-    <.link
-      phx-click={JS.push("play", value: %{id: song.id})}
-    >
+    <.link phx-click={JS.push("play", value: %{id: song.id})}>
       Play
     </.link>
   </:action>
   <:action :let={{_id, song}}>
-    <.link
-      phx-click={JS.push("addToQueue", value: %{id: song.id})}
-      >
+    <.link phx-click={JS.push("addToQueue", value: %{id: song.id})}>
       Add to Queue
     </.link>
   </:action>
@@ -60,4 +56,3 @@
     current_user={@current_user}
   />
 </.modal>
-

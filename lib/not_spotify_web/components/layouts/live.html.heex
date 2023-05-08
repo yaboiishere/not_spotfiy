@@ -48,7 +48,7 @@
         </li>
       <% end %>
     </ul>
-    </span>
+  </span>
   <div class="mx-auto max-w-2xl flex-grow ">
     <.flash_group flash={@flash} />
     <%= @inner_content %>
@@ -56,8 +56,8 @@
     <.live_component module={NotSpotifyWeb.LayoutComponent} id="layout" />
   </div>
   <footer class="mx-10 bg-blue-500">
-  <%= if @current_user do %>
-    <%= live_render(@socket, NotSpotifyWeb.PlayerLive, id: "player", session: %{}, sticky: true) %>
-  <% end %>
+    <%= if @current_user do %>
+      <%= live_render(@socket, NotSpotifyWeb.PlayerLive, id: "player", session: %{}, sticky: true) %>
+    <% end %>
   </footer>
 </main>

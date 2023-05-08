@@ -716,6 +716,7 @@ defmodule NotSpotifyWeb.CoreComponents do
   attr :min, :integer, default: 0
   attr :max, :integer, default: 100
   attr :id, :string, default: "progress-bar"
+
   def progress_bar(assigns) do
     assigns = assign_new(assigns, :value, fn -> assigns[:min] || 0 end)
 

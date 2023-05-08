@@ -13,7 +13,12 @@
     <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
       <div class="space-y-2 sm:space-y-2">
         <%= for {{ref, changeset}, i} <- Enum.with_index(@changesets) do %>
-          <.live_component id={ref} module={NotSpotifyWeb.SongLive.SongEntryComponent} changeset={changeset} index={i} />
+          <.live_component
+            id={ref}
+            module={NotSpotifyWeb.SongLive.SongEntryComponent}
+            changeset={changeset}
+            index={i}
+          />
         <% end %>
         <!-- upload -->
         <div class="sm:grid sm:border-t sm:border-gray-200 sm:pt-5">
@@ -81,4 +86,3 @@
     </div>
   </.form>
 </div>
-
