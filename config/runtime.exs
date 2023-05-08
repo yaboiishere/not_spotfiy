@@ -48,14 +48,21 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  giga_host = System.get_env("APP_NAME") <> ".gigalixirapp.com"
-  host = System.get_env("HOSTNAME") || giga_host
-  port = String.to_integer(System.get_env("PORT") || "4000")
+  host = System.get_env("HOSTNAME") || System.get_env("APP_NAME") <> ".gigalixirapp."
+  port = String.to_integer(System.get_env("PORT"))
 
   config :not_spotify, NotSpotifyWeb.Endpoint,
     server: true,
     # Needed for Phoenix 1.2 and 1.4. Doesn't hurt for 1.3.
     http: [port: port],
-    url: [host: host, port: 443],
+    url: [scheme: "https", host: host, port: port],
+    ip: {0, 0, 0, 0},
     secret_key_base: secret_key_base
+
+  config :not_spotify, :files,
+    uploads_dir: Path.join([:code.priv_dir(:not_spotify), "uploads"]),
+    host: [scheme: "https", host: host, port: port],
+    server_ip: "0.0.0.0",
+    hostname: host,
+    transport_opts: []
 end

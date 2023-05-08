@@ -1,0 +1,29 @@
+# fly.toml app configuration file generated for mitu on 2023-05-07T20:20:17+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "mitu"
+primary_region = "otp"
+kill_signal = "SIGTERM"
+
+[deploy]
+  release_command = "/app/bin/migrate"
+
+[env]
+  PHX_HOST = "mitu.fly.dev"
+  PORT = "8080"
+
+[[mounts]]
+  source = "mitu_data"
+  destination = "/app/lib/not_spotify-0.1.0/priv/uploads/songs"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 1000
+    soft_limit = 1000
