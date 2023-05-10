@@ -716,6 +716,7 @@ defmodule NotSpotifyWeb.CoreComponents do
   attr :min, :integer, default: 0
   attr :max, :integer, default: 100
   attr :id, :string, default: "progress-bar"
+  attr :class, :string, default: ""
 
   def progress_bar(assigns) do
     assigns = assign_new(assigns, :value, fn -> assigns[:min] || 0 end)
@@ -723,7 +724,7 @@ defmodule NotSpotifyWeb.CoreComponents do
     ~H"""
     <div
       id={"#{@id}-container"}
-      class="bg-gray-200 flex-auto dark:bg-black rounded-full overflow-hidden"
+      class={"bg-gray-200 flex-auto dark:bg-black rounded-full overflow-hidden #{@class}"}
       phx-update="ignore"
     >
       <div
