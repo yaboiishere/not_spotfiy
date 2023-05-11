@@ -127,8 +127,7 @@ defmodule NotSpotifyWeb.PlayerLive do
           phx-click="clear_queue"
           aria-label="Clear Queue"
         >
-
-        <FontAwesome.LiveView.icon name="square-minus" type="regular" class="h-6 w-6 fill-white" />
+          <FontAwesome.LiveView.icon name="square-minus" type="regular" class="h-6 w-6 fill-white" />
         </button>
       </div>
 
