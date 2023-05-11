@@ -1,7 +1,7 @@
-<main class="flex flex-col h-full">
-  <span class="flex justify-between">
+<main class="flex flex-col h-full app-background text-zinc-100">
+<span class="flex justify-between app-foreground h-10 lg:m-3">
     <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
-      <li class="text-[0.8125rem] leading-6 text-zinc-900 justify-self-start">
+      <li class="text-[0.8125rem] leading-6 text-zinc-100 justify-self-start">
         <a href="/">
           <img src={~p"/images/logo.svg"} width="36" />
         </a>
@@ -9,13 +9,13 @@
     </ul>
     <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
       <%= if @current_user do %>
-        <li class="text-[0.8125rem] leading-6 text-zinc-900">
+        <li class="text-[0.8125rem] leading-6">
           <%= @current_user.email %>
         </li>
         <li>
           <.link
             href={~p"/users/settings"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-300"
           >
             Settings
           </.link>
@@ -24,7 +24,7 @@
           <.link
             href={~p"/users/log_out"}
             method="delete"
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-300"
           >
             Log out
           </.link>
@@ -33,7 +33,7 @@
         <li>
           <.link
             href={~p"/users/register"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-300"
           >
             Register
           </.link>
@@ -41,7 +41,7 @@
         <li>
           <.link
             href={~p"/users/log_in"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-300"
           >
             Log in
           </.link>
@@ -49,7 +49,7 @@
       <% end %>
     </ul>
   </span>
-  <div class="mx-auto max-w-2xl flex-grow ">
+  <div class="flex-grow app-foreground px-3 lg:px-20 my-3 overflow-auto mx-3 py-3 max-h-[70%] md:max-h-full">
     <.flash_group flash={@flash} />
     <%= @inner_content %>
 
