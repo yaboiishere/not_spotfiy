@@ -127,10 +127,7 @@ defmodule NotSpotifyWeb.PlayerLive do
           phx-click="clear_queue"
           aria-label="Clear Queue"
         >
-          <svg width="17" height="18" viewBox="0 0 17 18" fill="none">
-            <path d="M17 0H15V18H17V0Z" fill="currentColor" />
-            <path d="M13 9L0 0V18L13 9Z" fill="currentColor" />
-          </svg>
+          <FontAwesome.LiveView.icon name="square-minus" type="regular" class="h-6 w-6 fill-white" />
         </button>
       </div>
 

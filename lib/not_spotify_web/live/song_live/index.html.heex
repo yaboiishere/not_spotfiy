@@ -23,24 +23,26 @@
     <div class="sr-only">
       <.link navigate={~p"/songs/#{song}"}>Show</.link>
     </div>
-    <.link patch={~p"/songs/#{song}/edit"}>Edit</.link>
+    <.link patch={~p"/songs/#{song}/edit"}>
+      <FontAwesome.LiveView.icon name="pen-to-square" type="solid" class="h-5 w-5 inline" />
+    </.link>
   </:action>
   <:action :let={{id, song}}>
     <.link
       phx-click={JS.push("delete", value: %{id: song.id}) |> hide("##{id}")}
       data-confirm="Are you sure?"
     >
-      Delete
+      <FontAwesome.LiveView.icon name="trash-can" type="solid" class="h-5 w-5 inline" />
     </.link>
   </:action>
   <:action :let={{_id, song}}>
     <.link phx-click={JS.push("play", value: %{id: song.id})}>
-      Play
+      <FontAwesome.LiveView.icon name="play" type="solid" class="h-5 w-5 inline" />
     </.link>
   </:action>
   <:action :let={{_id, song}}>
     <.link phx-click={JS.push("addToQueue", value: %{id: song.id})}>
-      Add to Queue
+      <FontAwesome.LiveView.icon name="circle-plus" type="solid" class="h-5 w-5 inline" />
     </.link>
   </:action>
 </.table>
