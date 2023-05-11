@@ -53,7 +53,8 @@ defmodule NotSpotify.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:heroicons, "~> 0.2.2"},
       {:credo, "~> 1.6"},
-      {:dialyxir, "~> 1.2.0", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.2.0", only: [:dev], runtime: false},
+      {:ex_fontawesome, "~> 0.7.2"}
     ]
   end
 
