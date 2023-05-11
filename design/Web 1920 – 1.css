@@ -1,0 +1,73 @@
+@charset "utf-8";
+	.Rectangle_3
+{
+	background : #333333;
+	background : rgba(51, 51, 51, 1);
+	width : 1552px;
+	height : 700px;
+	border-radius : 41px;
+	-moz-border-radius : 41px;
+	-webkit-border-radius : 41px;
+}
+.Path_2
+{
+	background : #FFFFFF;
+	background : rgba(255, 255, 255, 1);
+	width : 69px;
+	height : 69px;
+}
+.t
+{
+	background-image : url(t.png);
+	background-repeat : no-repeat;
+	width : 22px;
+	height : 40px;
+}
+.Rectangle_1
+{
+	background : #333333;
+	background : rgba(51, 51, 51, 1);
+	width : 1658px;
+	height : 111px;
+	border-radius : 33px;
+	-moz-border-radius : 33px;
+	-webkit-border-radius : 33px;
+}
+.NormalCharacterStyle
+{
+	font-family : Hibana;
+	font-size : 25px;
+	color : #F79757;
+	color : rgb(247, 151, 87);
+}
+.st0
+{
+	background : #1D1D1D;
+	background : rgba(29, 29, 29, 1);
+	width : 1730px;
+	height : 1007px;
+}
+.logo
+{
+	background-image : url(logo.png);
+	background-repeat : no-repeat;
+	width : 80px;
+	height : 76px;
+}
+.Rectangle_2
+{
+	background : #1D1D1D;
+	background : rgba(29, 29, 29, 1);
+	width : 242px;
+	height : 63px;
+	border-radius : 20px;
+	-moz-border-radius : 20px;
+	-webkit-border-radius : 20px;
+}
+.Listing_Songs
+{
+	background-image : url(Listing_Songs.png);
+	background-repeat : no-repeat;
+	width : 316px;
+	height : 57px;
+}
