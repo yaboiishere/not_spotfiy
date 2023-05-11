@@ -28,7 +28,7 @@ defmodule NotSpotifyWeb.PlayerLive do
               </p>
             </div>
           </div>
-          <.progress_bar id="player-progress" />
+          <.progress_bar id="player-progress" class="cursor-pointer" />
 
           <div
             id="player-info"
