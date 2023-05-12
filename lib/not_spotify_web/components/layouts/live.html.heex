@@ -1,13 +1,13 @@
-<main class="flex flex-col h-full app-background text-zinc-100">
-<span class="flex justify-between app-foreground h-10 lg:m-3">
+<main class="flex flex-col h-full bg-brand-black">
+<span class="flex justify-between bg-brand-grey h-10 lg:m-3 rounded-3xl">
     <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
-      <li class="text-[0.8125rem] leading-6 text-zinc-100 justify-self-start">
+      <li class="text-[0.8125rem] leading-6 text-brand-orange justify-self-start">
         <a href="/">
           <img src={~p"/images/logo.svg"} width="36" />
         </a>
       </li>
     </ul>
-    <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
+    <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end text-brand-orange">
       <%= if @current_user do %>
         <li class="text-[0.8125rem] leading-6">
           <%= @current_user.email %>
@@ -15,7 +15,7 @@
         <li>
           <.link
             href={~p"/users/settings"}
-            class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-300"
+            class="text-[0.8125rem] leading-6 font-semibold hover:text-orange-600"
           >
             Settings
           </.link>
@@ -24,7 +24,7 @@
           <.link
             href={~p"/users/log_out"}
             method="delete"
-            class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-300"
+            class="text-[0.8125rem] leading-6 font-semibold hover:text-orange-600"
           >
             Log out
           </.link>
@@ -33,7 +33,7 @@
         <li>
           <.link
             href={~p"/users/register"}
-            class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-300"
+            class="text-[0.8125rem] leading-6 font-semibold hover:text-orange-600"
           >
             Register
           </.link>
@@ -41,7 +41,7 @@
         <li>
           <.link
             href={~p"/users/log_in"}
-            class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-300"
+            class="text-[0.8125rem] leading-6 font-semibold hover:text-orange-600"
           >
             Log in
           </.link>
@@ -49,13 +49,13 @@
       <% end %>
     </ul>
   </span>
-  <div class="flex-grow app-foreground px-3 lg:px-20 my-3 overflow-auto mx-3 py-3 max-h-[70%] md:max-h-full">
+  <div class="flex-grow bg-brand-grey rounded-3xl px-3 lg:px-20 my-3 overflow-auto mx-3 py-3 max-h-[70%] md:max-h-full">
     <.flash_group flash={@flash} />
     <%= @inner_content %>
 
     <.live_component module={NotSpotifyWeb.LayoutComponent} id="layout" />
   </div>
-  <footer class="mx-10 bg-blue-500">
+  <footer class="mx-3">
     <%= if @current_user do %>
       <%= live_render(@socket, NotSpotifyWeb.PlayerLive, id: "player", session: %{}, sticky: true) %>
     <% end %>
