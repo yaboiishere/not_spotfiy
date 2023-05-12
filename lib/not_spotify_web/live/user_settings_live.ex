@@ -58,7 +58,7 @@ defmodule NotSpotifyWeb.UserSettingsLive do
           <.input
             field={@password_form[:password_confirmation]}
             type="password"
-            label="Confirm new password"
+            label="Confirm password"
           />
           <.input
             field={@password_form[:email]}
@@ -67,7 +67,7 @@ defmodule NotSpotifyWeb.UserSettingsLive do
             value={@current_email}
           />
           <:actions>
-            <.button class="mx-auto" phx-disable-with="Changing...">
+            <.button class="mx-auto whitespace-no-wrap" phx-disable-with="Changing...">
               Change Password
             </.button>
           </:actions>
