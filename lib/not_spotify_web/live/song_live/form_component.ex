@@ -6,26 +6,34 @@ defmodule NotSpotifyWeb.SongLive.FormComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div>
+    <div class="bg-brand-grey">
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage song records in your database.</:subtitle>
+        <:subtitle>Edit Song</:subtitle>
       </.header>
 
-      <.simple_form
+      <.three_elements_per_row_form
         for={@form}
         id="song-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
-        <.input field={@form[:year]} type="number" label="Year" />
-        <.input field={@form[:content_location]} type="text" label="Content location" />
+        <.input field={@form[:title]} type="text" label="Song title" />
+        <.input field={@form[:artist]} type="text" label="Song artist" />
+        <.input field={@form[:album]} type="text" label="Song album" />
+        <.input field={@form[:album_artist]} type="text" label="Album artist" />
+        <.input field={@form[:genre]} type="text" label="Song genre" />
+        <.input field={@form[:date_recorded]} type="number" label="Date recorded" />
+        <.input field={@form[:date_released]} type="number" label="Date released" />
+        <.input field={@form[:track]} type="text" label="Genre" />
+        <.input field={@form[:genre]} type="text" label="Song genre" />
+        <div></div>
+
         <:actions>
-          <.button phx-disable-with="Saving...">Save Song</.button>
+          <.button class="mx-auto" phx-disable-with="Saving...">Save Song</.button>
         </:actions>
-      </.simple_form>
+      </.three_elements_per_row_form>
     </div>
     """
   end

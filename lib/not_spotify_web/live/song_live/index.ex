@@ -61,7 +61,13 @@ defmodule NotSpotifyWeb.SongLive.Index do
 
   @impl true
   def handle_info({:update, :index, songs}, socket) do
-    new_socket = stream_insert(socket, :songs, songs)
+    new_socket =
+      songs
+      |> Map.values()
+      |> Enum.reduce(socket, fn song, sock ->
+        stream_insert(sock, :songs, song)
+      end)
+
     {:noreply, new_socket}
   end
 
@@ -105,11 +111,4 @@ defmodule NotSpotifyWeb.SongLive.Index do
 
     socket
   end
-
-  def formatted_length(length) do
-    "#{div(length, 60)}:#{formatted_seconds(rem(length, 60))}"
-  end
-
-  defp formatted_seconds(s) when s < 10, do: "0#{s}"
-  defp formatted_seconds(s), do: "#{s}"
 end
