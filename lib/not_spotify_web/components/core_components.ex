@@ -250,8 +250,6 @@ defmodule NotSpotifyWeb.CoreComponents do
     """
   end
 
-  # 3 elemements per row form
-
   attr :for, :any, required: true, doc: "the datastructure for the form"
   attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
 
@@ -267,10 +265,7 @@ defmodule NotSpotifyWeb.CoreComponents do
     <.form :let={f} for={@for} as={@as} {@rest}>
       <div class="mt-10 bg-brand-grey grid grid-cols-3">
         <%= render_slot(@inner_block, f) %>
-        <div
-          :for={action <- @actions}
-          class="mt-2 space-x-3 items-center text-brand-orange pt-0 justify-around flex mx-4"
-        >
+        <div :for={action <- @actions} class="mt-2 items-center text-brand-orange pt-0 flex mx-4">
           <%= render_slot(action, f) %>
         </div>
       </div>
@@ -368,7 +363,7 @@ defmodule NotSpotifyWeb.CoreComponents do
           name={@name}
           value="true"
           checked={@checked}
-          class="rounded border-zinc-300 text-zinc-900 focus:ring-0"
+          class="rounded border-orange-600 text-brand-orange focus:ring-0"
           {@rest}
         />
         <%= @label %>
@@ -431,7 +426,7 @@ defmodule NotSpotifyWeb.CoreComponents do
           "mt-2 block w-[98%] rounded-lg text-brand-orange focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-orange-600 phx-no-feedback:focus:border-brand-orange",
           "border-brand-orange focus:border-orange-600",
-          "bg-brand-grey",
+          "bg-brand-black",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
         {@rest}
