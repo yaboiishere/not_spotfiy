@@ -1,26 +1,30 @@
-<.header>
-  Song <%= @song.id %>
-  <:subtitle>This is a song record from your database.</:subtitle>
-  <:actions>
-    <.link patch={~p"/songs/#{@song}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit song</.button>
-    </.link>
-  </:actions>
-</.header>
+<div class="bg-zinc-800 p-4 rounded-3xl grid md:w-[60%] mx-auto">
+  <div class="col-span-2 w-full">
+    <.header>
+      <%= @song.title %>
+      <:actions>
+        <.link patch={~p"/songs/#{@song}/show/edit"} phx-click={JS.push_focus()}>
+          <.button>Edit song</.button>
+        </.link>
+      </:actions>
+    </.header>
+  </div>
 
-<.list>
-  <:item title="Name"><%= @song.title %></:item>
-  <:item title="Album Artist"><%= @song.album_artist %></:item>
-  <:item title="Date Recorded"><%= @song.date_recorded %></:item>
-  <:item title="Date Released"><%= @song.date_released %></:item>
-  <:item title="Artist"><%= @song.artist %></:item>
-  <:item title="Genre"><%= @song.genre %></:item>
-  <:item title="Duration"><%= @song.duration %></:item>
-  <:item title="Uploader"><%= @song.user.username %></:item>
-</.list>
+  <div class="flex col-span-2 justify-center">
+    <.list>
+      <:item title="Artist"><%= @song.artist %></:item>
+      <:item title="Album"><%= @song.album %></:item>
+      <:item title="Album Artist"><%= @song.album_artist %></:item>
+      <:item title="Genre"><%= @song.genre %></:item>
+      <:item title="Date Recorded"><%= @song.date_recorded %></:item>
+      <:item title="Date Released"><%= @song.date_released %></:item>
+      <:item title="Duration"><%= formatted_length(@song.duration) %></:item>
+      <:item title="Uploader"><%= @song.user.username %></:item>
+    </.list>
+  </div>
 
-<.back navigate={~p"/songs"}>Back to songs</.back>
-
+  <.back navigate={~p"/songs"}>Back to songs</.back>
+</div>
 <.modal :if={@live_action == :edit} id="song-modal" show on_cancel={JS.patch(~p"/songs/#{@song}")}>
   <.live_component
     module={NotSpotifyWeb.SongLive.FormComponent}

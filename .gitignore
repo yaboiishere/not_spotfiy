@@ -35,3 +35,4 @@ not_spotify-*.tar
 npm-debug.log
 /assets/node_modules/
 
+gigalixir

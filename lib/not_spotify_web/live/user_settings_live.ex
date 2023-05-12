@@ -12,7 +12,7 @@ defmodule NotSpotifyWeb.UserSettingsLive do
 
     <div class="space-y-12 divide-y">
       <div>
-        <.simple_form
+        <.three_elements_per_row_form
           for={@email_form}
           id="email_form"
           phx-submit="update_email"
@@ -29,12 +29,14 @@ defmodule NotSpotifyWeb.UserSettingsLive do
             required
           />
           <:actions>
-            <.button phx-disable-with="Changing...">Change Email</.button>
+            <.button class="align-self-left mt-5" phx-disable-with="Changing...">
+              Change Email
+            </.button>
           </:actions>
-        </.simple_form>
+        </.three_elements_per_row_form>
       </div>
       <div>
-        <.simple_form
+        <.three_elements_per_row_form
           for={@password_form}
           id="password_form"
           action={~p"/users/log_in?_action=password_updated"}
@@ -44,18 +46,6 @@ defmodule NotSpotifyWeb.UserSettingsLive do
           phx-trigger-action={@trigger_submit}
         >
           <.input
-            field={@password_form[:email]}
-            type="hidden"
-            id="hidden_user_email"
-            value={@current_email}
-          />
-          <.input field={@password_form[:password]} type="password" label="New password" required />
-          <.input
-            field={@password_form[:password_confirmation]}
-            type="password"
-            label="Confirm new password"
-          />
-          <.input
             field={@password_form[:current_password]}
             name="current_password"
             type="password"
@@ -64,10 +54,24 @@ defmodule NotSpotifyWeb.UserSettingsLive do
             value={@current_password}
             required
           />
+          <.input field={@password_form[:password]} type="password" label="New password" required />
+          <.input
+            field={@password_form[:password_confirmation]}
+            type="password"
+            label="Confirm password"
+          />
+          <.input
+            field={@password_form[:email]}
+            type="hidden"
+            id="hidden_user_email"
+            value={@current_email}
+          />
           <:actions>
-            <.button phx-disable-with="Changing...">Change Password</.button>
+            <.button class="mx-auto whitespace-no-wrap" phx-disable-with="Changing...">
+              Change Password
+            </.button>
           </:actions>
-        </.simple_form>
+        </.three_elements_per_row_form>
       </div>
     </div>
     """
