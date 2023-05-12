@@ -3,7 +3,7 @@
     <.header>
       <%= @song.title %>
       <:actions>
-        <%= if @current_user.id == @song.user_id do %>
+        <%= if @current_user.id == @song.user_id or @current_user.is_admin do %>
           <.link patch={~p"/songs/#{@song}/show/edit"} phx-click={JS.push_focus()}>
             <.button>Edit song</.button>
           </.link>

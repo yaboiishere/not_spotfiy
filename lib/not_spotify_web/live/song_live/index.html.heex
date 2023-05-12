@@ -27,7 +27,7 @@
     </div>
   </:action>
   <:action :let={{id, song}}>
-    <%= if @current_user.id == song.user_id do %>
+    <%= if @current_user.id == song.user_id or @current_user.is_admin do %>
       <.link patch={~p"/songs/#{song}/edit"} class="fill-zinc-100 hover:fill-zinc-300 mr-4">
         <FontAwesome.LiveView.icon name="pen-to-square" type="solid" class="h-5 w-5 inline" />
       </.link>
