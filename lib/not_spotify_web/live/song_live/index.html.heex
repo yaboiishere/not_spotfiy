@@ -25,17 +25,19 @@
     <div class="sr-only">
       <.link navigate={~p"/songs/#{song}"}>Show</.link>
     </div>
-    <.link patch={~p"/songs/#{song}/edit"} class="fill-zinc-100 hover:fill-zinc-300">
+    </:action>
+    <:action :let={{id, song}}>
+  <%= if @current_user.id == song.user_id do %>
+    <.link patch={~p"/songs/#{song}/edit"} class="fill-zinc-100 hover:fill-zinc-300 mr-4">
       <FontAwesome.LiveView.icon name="pen-to-square" type="solid" class="h-5 w-5 inline" />
     </.link>
-  </:action>
-  <:action :let={{id, song}}>
     <.link
       phx-click={JS.push("delete", value: %{id: song.id}) |> hide("##{id}")}
       data-confirm="Are you sure?"
     >
       <FontAwesome.LiveView.icon name="trash-can" type="solid" class="h-5 w-5 inline" />
     </.link>
+  <% end %>
   </:action>
   <:action :let={{_id, song}}>
     <.link phx-click={JS.push("play", value: %{id: song.id})}>
