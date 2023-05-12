@@ -61,7 +61,13 @@ defmodule NotSpotifyWeb.SongLive.Index do
 
   @impl true
   def handle_info({:update, :index, songs}, socket) do
-    new_socket = stream_insert(socket, :songs, songs)
+    new_socket =
+      songs
+      |> Map.values()
+      |> Enum.reduce(socket, fn song, sock ->
+        stream_insert(sock, :songs, song)
+      end)
+
     {:noreply, new_socket}
   end
 

@@ -98,11 +98,11 @@ defmodule NotSpotifyWeb.CoreComponents do
                 />
               </div>
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full mr-12">
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id={"#{@id}-title"}>
+                <h3 class="text-lg leading-6 font-medium text-brand-orange" id={"#{@id}-title"}>
                   <%= render_slot(@title) %>
                 </h3>
                 <div class="mt-2">
-                  <p id={"#{@id}-content"} class="text-sm text-gray-500">
+                  <p id={"#{@id}-content"} class="text-sm text-brand-orange">
                     <%= render_slot(@inner_block) %>
                   </p>
                 </div>
@@ -112,7 +112,7 @@ defmodule NotSpotifyWeb.CoreComponents do
               <%= for confirm <- @confirm do %>
                 <button
                   id={"#{@id}-confirm"}
-                  class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-brand-orange text-base font-medium text-zinc-100 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
                   phx-click={@on_confirm}
                   phx-disable-with
                   {assigns_to_attributes(confirm)}
@@ -122,7 +122,7 @@ defmodule NotSpotifyWeb.CoreComponents do
               <% end %>
               <%= for cancel <- @cancel do %>
                 <button
-                  class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                  class="mt-3 w-full inline-flex justify-center rounded-md bg-brand-black shadow-sm px-4 py-2 text-base font-medium text-brand-orange hover:text-zinc-100 hover:bg-brand-orange focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                   phx-click={hide_modal(@on_cancel, @id)}
                   {assigns_to_attributes(cancel)}
                 >
@@ -292,8 +292,8 @@ defmodule NotSpotifyWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-brand-black hover:bg-brand-orange py-2 px-3",
-        "text-sm font-semibold leading-6 text-brand-orange hover:text-zinc-100 active:text-brand-black, border-zinc-100",
+        "phx-submit-loading:opacity-75 rounded-lg bg-brand-orange hover:bg-brand-black py-2 px-3",
+        "text-sm font-semibold leading-6 text-zinc-100 hover:text-zinc-100 active:text-brand-black, border-zinc-100",
         @class
       ]}
       {@rest}
@@ -607,7 +607,7 @@ defmodule NotSpotifyWeb.CoreComponents do
       <dl class="-my-4 divide-y divide-brand-orange">
         <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
           <dt class="w-1/4 flex-none text-orange-600 text-bold"><%= item.title %></dt>
-          <dd class="text-brand-orange"><%= render_slot(item) %></dd>
+          <dd class="text-brand-orange break-all"><%= render_slot(item) %></dd>
         </div>
       </dl>
     </div>

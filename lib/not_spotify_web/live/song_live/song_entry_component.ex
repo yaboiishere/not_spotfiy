@@ -9,16 +9,16 @@ defmodule NotSpotifyWeb.SongLive.SongEntryComponent do
 
   def render(assigns) do
     ~H"""
-    <div class="sm:grid sm:grid-cols-2 sm:gap-2 sm:items-start sm:border-t sm:border-gray-200 sm:pt-2">
-      <div class="border border-gray-300 rounded-md px-3 py-2 mt-2 shadow-sm focus-within:ring-1 focus-within:ring-indigo-600 focus-within:border-indigo-600">
-        <label for="name" class="block text-xs font-medium text-gray-900">
+    <div class="sm:grid sm:grid-cols-2 sm:gap-2 sm:items-start sm:border-t sm:border-brand-orange sm:pt-2 text-brand-orange">
+      <div class="rounded-md px-3 py-2 mt-2 shadow-sm focus-within:ring-1 ">
+        <label for="name" class="block text-xs font-medium">
           <%= if @duration do %>
-            Title <span class="text-gray-400">(<%= MP3Stat.to_mmss(@duration) %>)</span>
+            Title <span class="text-brand-orange">(<%= MP3Stat.to_mmss(@duration) %>)</span>
           <% else %>
             Title
-            <span class="text-gray-400">
+            <span class="text-brand-orange">
               (calculating duration
-              <.spinner class="inline-block animate-spin h-2.5 w-2.5 text-gray-400" />)
+              <.spinner class="inline-block animate-spin h-2.5 w-2.5 text-brand-orange" />)
             </span>
           <% end %>
         </label>
@@ -26,39 +26,22 @@ defmodule NotSpotifyWeb.SongLive.SongEntryComponent do
           type="text"
           name={"songs[#{@ref}][title]"}
           value={@title}
-          class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm"
+          class="mt-2 block w-[98%] rounded-lg text-brand-orange focus:ring-0 sm:text-sm sm:leading-6 phx-no-feedback:border-orange-600 phx-no-feedback:focus:border-brand-orange border-brand-orange focus:border-orange-600 bg-brand-black"
           {%{autofocus: @index == 0}}
         />
       </div>
-      <div class="border border-gray-300 rounded-md px-3 py-2 mt-2 shadow-sm focus-within:ring-1 focus-within:ring-indigo-600 focus-within:border-indigo-600">
-        <label for="name" class="block text-xs font-medium text-gray-900">Artist</label>
+      <div class="rounded-md px-3 py-2 mt-2 shadow-sm">
+        <label for="name" class="block text-xs font-medium text-brand-orange">Artist</label>
         <input
           type="text"
           name={"songs[#{@ref}][artist]"}
           value={@artist}
-          class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm"
+          class="mt-2 block w-[98%] rounded-lg text-brand-orange focus:ring-0 sm:text-sm sm:leading-6 phx-no-feedback:border-orange-600 phx-no-feedback:focus:border-brand-orange border-brand-orange focus:border-orange-600 bg-brand-black"
         />
       </div>
       <div class="col-span-full sm:grid sm:grid-cols-2 sm:gap-2 sm:items-start">
         <.error input_name={"songs[#{@ref}][title]"} field={:title} errors={@errors} class="-mt-1" />
         <.error input_name={"songs[#{@ref}][artist]"} field={:artist} errors={@errors} class="-mt-1" />
-      </div>
-      <div class="border col-span-full border-gray-300 rounded-md px-3 py-2 mt-2 shadow-sm focus-within:ring-1 focus-within:ring-indigo-600 focus-within:border-indigo-600">
-        <label for="name" class="block text-xs font-medium text-gray-900">
-          License Attribution <span class="text-gray-400">(as required by artist)</span>
-        </label>
-        <textarea
-          name={"songs[#{@ref}][attribution]"}
-          class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-xs"
-        ><%= @attribution %></textarea>
-      </div>
-      <div class="col-span-full sm:grid sm:grid-cols-2 sm:gap-2 sm:items-start">
-        <.error
-          input_name={"songs[#{@ref}][attribution]"}
-          field={:attribution}
-          errors={@errors}
-          class="-mt-1"
-        />
       </div>
       <div
         role="progressbar"
@@ -66,7 +49,7 @@ defmodule NotSpotifyWeb.SongLive.SongEntryComponent do
         aria-valuemax="100"
         aria-valuenow={@progress}
         style={"transition: width 0.5s ease-in-out; width: #{@progress}%; min-width: 1px;"}
-        class="col-span-full bg-purple-500 dark:bg-purple-400 h-1.5 w-0 p-0"
+        class="col-span-full bg-brand-orange h-1.5 w-0 p-0 rounded-lg mt-2"
       >
       </div>
     </div>
@@ -86,7 +69,6 @@ defmodule NotSpotifyWeb.SongLive.SongEntryComponent do
      |> assign(title: Ecto.Changeset.get_field(changeset, :title))
      |> assign(artist: Ecto.Changeset.get_field(changeset, :artist))
      |> assign(duration: Ecto.Changeset.get_field(changeset, :duration))
-     |> assign(attribution: Ecto.Changeset.get_field(changeset, :attribution))
      |> assign_new(:progress, fn -> 0 end)}
   end
 end

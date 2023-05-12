@@ -1,16 +1,14 @@
-<div>
-  <p class="inline text-gray-500 text-sm">(songs expire every six hours)</p>
-
+<div class="text-brand-orange">
   <.form
     for={%{}}
     as={:songs}
     id="song-form"
-    class="space-y-8"
+    class="space-y-8 text-brand-orange"
     phx-target={@myself}
     phx-change="validate"
     phx-submit="save"
   >
-    <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+    <div class="space-y-8 divide-y divide-brand-orange sm:space-y-5">
       <div class="space-y-2 sm:space-y-2">
         <%= for {{ref, changeset}, i} <- Enum.with_index(@changesets) do %>
           <.live_component
@@ -21,7 +19,7 @@
           />
         <% end %>
         <!-- upload -->
-        <div class="sm:grid sm:border-t sm:border-gray-200 sm:pt-5">
+        <div class="sm:grid sm:border-t sm:border-brand-orange sm:pt-5">
           <div class="mt-1 sm:mt-0" phx-drop-target={@uploads.mp3.ref}>
             <%= if Enum.any?(@error_messages) do %>
               <div class="rounded-md bg-red-50 p-4 mb-2">
@@ -45,10 +43,10 @@
               </div>
             <% end %>
 
-            <div class="max-w-lg flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+            <div class="max-w-full flex justify-center px-6 pt-5 pb-6 border-2 border-brand-orange border-dashed rounded-md bg-brand-black text-brand-orange">
               <div class="space-y-1 text-center">
                 <svg
-                  class="mx-auto h-12 w-12 text-gray-400"
+                  class="mx-auto h-12 w-12"
                   stroke="currentColor"
                   fill="none"
                   viewBox="0 0 48 48"
@@ -62,10 +60,10 @@
                   >
                   </path>
                 </svg>
-                <div class="flex text-sm text-gray-600">
+                <div class="flex text-sm">
                   <label
                     for="file-upload"
-                    class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                    class="relative cursor-pointer bg-brand-grey rounded-md font-medium text-orange-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                   >
                     <label for={@uploads.mp3.ref}>
                       Upload files

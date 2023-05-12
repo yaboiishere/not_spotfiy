@@ -1,5 +1,5 @@
-<main class="flex flex-col h-full bg-brand-black">
-  <span class="flex justify-between bg-brand-grey h-10 lg:m-3 rounded-3xl">
+<main class="flex flex-col h-screen bg-brand-black">
+  <span class="flex justify-between bg-brand-grey h-10 m-2 rounded-3xl">
     <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
       <li class="text-[0.8125rem] leading-6 text-brand-orange justify-self-start">
         <a href="/">
@@ -49,13 +49,13 @@
       <% end %>
     </ul>
   </span>
-  <div class="flex-grow bg-brand-grey rounded-3xl px-3 lg:px-20 my-3 overflow-auto mx-3 py-3 max-h-[70%] md:max-h-full">
+  <div class="flex-grow bg-brand-grey rounded-3xl p-3 lg:px-20 m-3 overflow-auto mt-0 max-h-screen md:max-h-full">
     <.flash_group flash={@flash} />
     <%= @inner_content %>
 
     <.live_component module={NotSpotifyWeb.LayoutComponent} id="layout" />
   </div>
-  <footer class="mx-3">
+  <footer class="mx-3 mb-3">
     <%= if @current_user do %>
       <%= live_render(@socket, NotSpotifyWeb.PlayerLive, id: "player", session: %{}, sticky: true) %>
     <% end %>
