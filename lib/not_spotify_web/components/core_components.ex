@@ -65,7 +65,10 @@ defmodule NotSpotifyWeb.CoreComponents do
           aria-modal="true"
           tabindex="0"
         >
-          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true">
+          <div
+            class="fixed inset-0 bg-brand-black bg-opacity-75 transition-opacity"
+            aria-hidden="true"
+          >
           </div>
           <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
             &#8203;
@@ -73,7 +76,7 @@ defmodule NotSpotifyWeb.CoreComponents do
           <div
             id={"#{@id}-container"}
             class={
-              "#{if @show, do: "fade-in-scale", else: "hidden"} sticky inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform sm:my-8 sm:align-middle sm:max-w-xl sm:w-full sm:p-6"
+              "#{if @show, do: "fade-in-scale", else: "hidden"} sticky inline-block align-bottom bg-brand-grey rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full sm:p-6"
             }
             phx-window-keydown={hide_modal(@on_cancel, @id)}
             phx-key="escape"
@@ -86,9 +89,13 @@ defmodule NotSpotifyWeb.CoreComponents do
               <.link navigate={@navigate} data-modal-return class="hidden"></.link>
             <% end %>
             <div class="sm:flex sm:items-start">
-              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-purple-100 sm:mx-0">
+              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-brand-grey sm:mx-0">
                 <!-- Heroicon name: outline/plus -->
-                <.icon name={:information_circle} outlined class="h-6 w-6 text-purple-600" />
+                <.icon
+                  name={:information_circle}
+                  outlined
+                  class="h-6 w-6 text-brand-orange bg-brand-grey"
+                />
               </div>
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full mr-12">
                 <h3 class="text-lg leading-6 font-medium text-gray-900" id={"#{@id}-title"}>
@@ -230,9 +237,40 @@ defmodule NotSpotifyWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-10 space-y-8 bg-white">
+      <div class="mt-10 space-y-8 bg-brand-grey">
         <%= render_slot(@inner_block, f) %>
-        <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
+        <div
+          :for={action <- @actions}
+          class="mt-2 flex items-center justify-between gap-6 text-brand-orange"
+        >
+          <%= render_slot(action, f) %>
+        </div>
+      </div>
+    </.form>
+    """
+  end
+
+  # 3 elemements per row form
+
+  attr :for, :any, required: true, doc: "the datastructure for the form"
+  attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
+
+  attr :rest, :global,
+    include: ~w(autocomplete name rel action enctype method novalidate target),
+    doc: "the arbitrary HTML attributes to apply to the form tag"
+
+  slot :inner_block, required: true
+  slot :actions, doc: "the slot for form actions, such as a submit button"
+
+  def three_elements_per_row_form(assigns) do
+    ~H"""
+    <.form :let={f} for={@for} as={@as} {@rest}>
+      <div class="mt-10 bg-brand-grey grid grid-cols-3">
+        <%= render_slot(@inner_block, f) %>
+        <div
+          :for={action <- @actions}
+          class="mt-2 space-x-3 items-center text-brand-orange pt-0 justify-around flex mx-4"
+        >
           <%= render_slot(action, f) %>
         </div>
       </div>
@@ -260,7 +298,7 @@ defmodule NotSpotifyWeb.CoreComponents do
       type={@type}
       class={[
         "phx-submit-loading:opacity-75 rounded-lg bg-brand-black hover:bg-brand-orange py-2 px-3",
-        "text-sm font-semibold leading-6 text-zinc-100 active:text-brand-black",
+        "text-sm font-semibold leading-6 text-brand-orange hover:text-zinc-100 active:text-brand-black, border-zinc-100",
         @class
       ]}
       {@rest}
@@ -322,7 +360,7 @@ defmodule NotSpotifyWeb.CoreComponents do
 
     ~H"""
     <div phx-feedback-for={@name}>
-      <label class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
+      <label class="flex items-center gap-4 text-sm leading-6 text-brand-orange">
         <input type="hidden" name={@name} value="false" />
         <input
           type="checkbox"
@@ -390,9 +428,10 @@ defmodule NotSpotifyWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
-          "border-zinc-300 focus:border-zinc-400",
+          "mt-2 block w-[98%] rounded-lg text-brand-orange focus:ring-0 sm:text-sm sm:leading-6",
+          "phx-no-feedback:border-orange-600 phx-no-feedback:focus:border-brand-orange",
+          "border-brand-orange focus:border-orange-600",
+          "bg-brand-grey",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
         {@rest}
@@ -410,7 +449,7 @@ defmodule NotSpotifyWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-sm font-semibold leading-6 text-brand-orange">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -570,10 +609,10 @@ defmodule NotSpotifyWeb.CoreComponents do
   def list(assigns) do
     ~H"""
     <div class="mt-14">
-      <dl class="-my-4 divide-y divide-zinc-100">
+      <dl class="-my-4 divide-y divide-brand-orange">
         <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
-          <dt class="w-1/4 flex-none text-zinc-500"><%= item.title %></dt>
-          <dd class="text-zinc-700"><%= render_slot(item) %></dd>
+          <dt class="w-1/4 flex-none text-orange-600 text-bold"><%= item.title %></dt>
+          <dd class="text-brand-orange"><%= render_slot(item) %></dd>
         </div>
       </dl>
     </div>
@@ -597,8 +636,10 @@ defmodule NotSpotifyWeb.CoreComponents do
         navigate={@navigate}
         class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
       >
-        <!-- <.icon name={"hero-arrow-left-solid"} class="h-3 w-3" /> -->
-        <%= render_slot(@inner_block) %>
+        <.button>
+          <!-- <.icon name={"hero-arrow-left-solid"} class="h-3 w-3" /> -->
+          <%= render_slot(@inner_block) %>
+        </.button>
       </.link>
     </div>
     """
@@ -777,4 +818,11 @@ defmodule NotSpotifyWeb.CoreComponents do
   def js_exec(js \\ %JS{}, to, call, args) do
     JS.dispatch(js, "js:exec", to: to, detail: %{call: call, args: args})
   end
+
+  def formatted_length(length) do
+    "#{div(length, 60)}:#{formatted_seconds(rem(length, 60))}"
+  end
+
+  defp formatted_seconds(s) when s < 10, do: "0#{s}"
+  defp formatted_seconds(s), do: "#{s}"
 end

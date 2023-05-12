@@ -52,7 +52,7 @@
 <.modal :if={@live_action in [:edit]} id="song-modal" show on_cancel={JS.patch(~p"/songs")}>
   <.live_component
     module={NotSpotifyWeb.SongLive.FormComponent}
-    id={@song.id || :new}
+    id={@song.id }
     title={@page_title}
     action={@live_action}
     song={@song}
