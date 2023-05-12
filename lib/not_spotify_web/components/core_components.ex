@@ -569,8 +569,13 @@ defmodule NotSpotifyWeb.CoreComponents do
 
   def list(assigns) do
     ~H"""
+<<<<<<< Updated upstream
     <div class="mt-14">
       <dl class="-my-4 divide-y divide-zinc-100">
+=======
+    <div class="mt-14 min-w-[50%] ">
+      <dl class="-my-4 divide-y divide-brand-orange">
+>>>>>>> Stashed changes
         <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
           <dt class="w-1/4 flex-none text-zinc-500"><%= item.title %></dt>
           <dd class="text-zinc-700"><%= render_slot(item) %></dd>
