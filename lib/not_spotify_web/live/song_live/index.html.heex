@@ -1,11 +1,13 @@
-<.header>
-  Listing Songs
-  <:actions>
-    <.link patch={~p"/songs/new"}>
-      <.button>New Song</.button>
-    </.link>
-  </:actions>
-</.header>
+<div class="px-3">
+  <.header>
+    Listing Songs
+    <:actions>
+      <.link patch={~p"/songs/new"}>
+        <.button>New Song</.button>
+      </.link>
+    </:actions>
+  </.header>
+</div>
 
 <.table
   id="songs"
@@ -23,7 +25,7 @@
     <div class="sr-only">
       <.link navigate={~p"/songs/#{song}"}>Show</.link>
     </div>
-    <.link patch={~p"/songs/#{song}/edit"}>
+    <.link patch={~p"/songs/#{song}/edit"} class="fill-zinc-100 hover:fill-zinc-300">
       <FontAwesome.LiveView.icon name="pen-to-square" type="solid" class="h-5 w-5 inline" />
     </.link>
   </:action>

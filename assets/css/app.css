@@ -3,3 +3,12 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+.app-background {
+  background-color: #1d1d1d;
+}
+
+.app-foreground {
+  background-color: #333;
+  border-radius: 41px;
+}
