@@ -39,6 +39,7 @@ defmodule NotSpotify.Media do
   end
 
   def delete_song(%Song{} = song) do
+    File.rm!(song.mp3_filepath)
     Repo.delete(song)
   end
 
