@@ -1,4 +1,4 @@
-<div class="bg-zinc-800 p-4 rounded-3xl grid md:w-[60%] mx-auto">
+<div class="bg-zinc-800 p-4 rounded-3xl grid md:max-w-[50%] mx-auto">
   <div class="col-span-2 w-full">
     <.header>
       <%= @song.title %>
@@ -10,7 +10,7 @@
     </.header>
   </div>
 
-  <div class="flex col-span-2 justify-center">
+  <div class="col-span-2 justify-center">
     <.list>
       <:item title="Artist"><%= @song.artist %></:item>
       <:item title="Album"><%= @song.album %></:item>

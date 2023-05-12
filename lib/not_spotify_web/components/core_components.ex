@@ -605,7 +605,7 @@ defmodule NotSpotifyWeb.CoreComponents do
     ~H"""
     <div class="mt-14 min-w-[50%] ">
       <dl class="-my-4 divide-y divide-brand-orange">
-        <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
+        <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8 justify-between">
           <dt class="w-1/4 flex-none text-orange-600 text-bold"><%= item.title %></dt>
           <dd class="text-brand-orange break-all"><%= render_slot(item) %></dd>
         </div>
