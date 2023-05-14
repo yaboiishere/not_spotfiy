@@ -197,7 +197,12 @@ defmodule NotSpotifyWeb.PlayerLive do
     {:ok, socket, layout: false, temporary_assigns: []}
   end
 
-  def handle_event("play_pause", _, socket) do
+  def terminate(_reason, socket) do
+    PlayingProcess.set_elapsed(socket.assigns.current_user, 0)
+    {:ok, socket}
+  end
+
+  def handle_event("play_pause", _params, socket) do
     %{song: song, playing: playing, songs: songs} = socket.assigns
     current_user = socket.assigns.current_user
     process_active_song = PlayingProcess.active_song(current_user)
@@ -270,6 +275,18 @@ defmodule NotSpotifyWeb.PlayerLive do
     {:noreply, new_socket}
   end
 
+  def handle_event("paused_at", %{"paused_at" => paused_at}, socket) do
+    set_elapsed(socket.assigns.current_user, paused_at)
+
+    {:noreply, socket}
+  end
+
+  def handle_event("seeked", %{"seeked" => seeked}, socket) do
+    set_elapsed(socket.assigns.current_user, seeked)
+
+    {:noreply, socket}
+  end
+
   def handle_info(:play_current, socket) do
     {:noreply, play_current_song(socket)}
   end
@@ -278,8 +295,9 @@ defmodule NotSpotifyWeb.PlayerLive do
     {:noreply, push_pause(socket)}
   end
 
-  def handle_info({Media, %Media.Events.Play{} = play}, socket) do
-    {:noreply, play_song(socket, play.song, play.elapsed)}
+  def handle_info({Media, %Media.Events.Play{elapsed: elapsed} = play}, socket) do
+    PlayingProcess.set_elapsed(socket.assigns.current_user, elapsed)
+    {:noreply, play_song(socket, play.song, elapsed)}
   end
 
   def handle_info({Media, %Media.Events.NextCallback{song: song}}, socket) do
@@ -374,5 +392,11 @@ defmodule NotSpotifyWeb.PlayerLive do
 
   defp js_listen_now(js \\ %JS{}) do
     JS.dispatch(js, "js:listen_now", to: "#audio-player")
+  end
+
+  defp set_elapsed(current_user, elapsed) do
+    seeked = round(elapsed)
+
+    PlayingProcess.set_elapsed(current_user, seeked)
   end
 end

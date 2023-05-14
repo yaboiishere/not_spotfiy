@@ -36,6 +36,16 @@ defmodule NotSpotify.Media.PlayingProcess do
     GenServer.call(process_name(user), :get_volume)
   end
 
+  def elapsed(user) do
+    start_if_not_running(user)
+    GenServer.call(process_name(user), :elapsed)
+  end
+
+  def set_elapsed(user, elapsed) do
+    start_if_not_running(user)
+    GenServer.cast(process_name(user), {:set_elapsed, elapsed})
+  end
+
   defmodule State do
     defstruct song: nil,
               playing: false,
@@ -43,7 +53,8 @@ defmodule NotSpotify.Media.PlayingProcess do
               user: nil,
               history: [],
               song_ref: nil,
-              volume: 1
+              volume: 1,
+              elapsed: 0
   end
 
   def start(user) do
@@ -75,14 +86,17 @@ defmodule NotSpotify.Media.PlayingProcess do
     {:noreply, state}
   end
 
-  def handle_info({Media, %Events.Play{song: song}}, state) do
+  def handle_info(
+        {Media, %Events.Play{song: song, elapsed: elapsed}},
+        %State{song: current_song} = state
+      ) do
     ref = make_ref()
-    Process.send_after(self(), {:stop_song, ref}, :timer.seconds(song.duration))
+    Process.send_after(self(), {:stop_song, ref}, :timer.seconds(song.duration - elapsed))
     {:noreply, %State{state | song: song, playing: true, song_ref: ref}}
   end
 
-  def handle_info({Media, %Events.Pause{}}, state) do
-    {:noreply, %State{state | playing: false}}
+  def handle_info({Media, %Events.Pause{paused_at: paused_at}}, state) do
+    {:noreply, %State{state | playing: false, elapsed: paused_at}}
   end
 
   def handle_info({Media, Events.Stop}, state) do
@@ -107,7 +121,14 @@ defmodule NotSpotify.Media.PlayingProcess do
         {Media, Events.Next},
         %State{song: song, song_queue: [next | rest], history: history, user: user} = state
       ) do
-    new_state = %State{state | song_queue: rest, history: [song | history], song: next}
+    new_state = %State{
+      state
+      | song_queue: rest,
+        history: [song | history],
+        song: next,
+        elapsed: 0
+    }
+
     Process.send(self(), {Media, %Events.Play{song: next}}, [])
     MusicBus.broadcast(User.process_name(user), {Media, %Events.NextCallback{song: next}})
 
@@ -127,7 +148,14 @@ defmodule NotSpotify.Media.PlayingProcess do
         {Media, Events.Prev},
         %State{history: [prev | rest], song_queue: song_queue, user: user, song: song} = state
       ) do
-    new_state = %State{state | song_queue: [song | song_queue], history: rest, song: prev}
+    new_state = %State{
+      state
+      | song_queue: [song | song_queue],
+        history: rest,
+        song: prev,
+        elapsed: 0
+    }
+
     Process.send(self(), {Media, %Events.Play{song: prev}}, [])
     MusicBus.broadcast(User.process_name(user), {Media, %Events.PrevCallback{song: prev}})
 
@@ -147,7 +175,7 @@ defmodule NotSpotify.Media.PlayingProcess do
   end
 
   def handle_info({:stop_song, ref}, %State{song_ref: ref} = state) do
-    {:noreply, %{state | song: nil, playing: false}}
+    {:noreply, %{state | song: nil, playing: false, elapsed: 0}}
   end
 
   def handle_info({:stop_song, _}, state) do
@@ -156,6 +184,10 @@ defmodule NotSpotify.Media.PlayingProcess do
 
   def handle_cast({:set_volume, volume}, state) do
     {:noreply, %{state | volume: volume}}
+  end
+
+  def handle_cast({:set_elapsed, elapsed}, state) do
+    {:noreply, %{state | elapsed: elapsed}}
   end
 
   def handle_call(:get_volume, _from, %State{volume: volume} = state) do
@@ -176,6 +208,10 @@ defmodule NotSpotify.Media.PlayingProcess do
 
   def handle_call(:song_queue, _from, state) do
     {:reply, state.song_queue, state}
+  end
+
+  def handle_call(:elapsed, _from, %State{elapsed: elapsed} = state) do
+    {:reply, elapsed, state}
   end
 
   def start_if_not_running(email) do

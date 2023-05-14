@@ -81,6 +81,7 @@ Hooks.AudioPlayer = {
 
         let percent = Math.floor((e.offsetX / outside.offsetWidth) * 100);
         this.player.currentTime = (percent / 100) * this.player.duration;
+        this.pushEvent("seeked", { seeked: this.player.currentTime });
       },
       false
     );
@@ -129,6 +130,7 @@ Hooks.AudioPlayer = {
 
   pause() {
     clearInterval(this.progressTimer);
+    this.pushEvent("paused_at", {paused_at: this.player.currentTime});
     this.player.pause();
   },
 
