@@ -38,6 +38,7 @@ Hooks.AudioPlayer = {
     this.currentTime = this.el.querySelector("#player-time");
     this.duration = this.el.querySelector("#player-duration");
     this.progress = this.el.querySelector("#player-progress");
+    this.volume = this.el.querySelector("#player-volume");
     let enableAudio = () => {
       if (this.player.src) {
         document.removeEventListener("click", enableAudio);
@@ -83,6 +84,24 @@ Hooks.AudioPlayer = {
       },
       false
     );
+
+    let volumeOutside = this.el.querySelector("#player-volume-container");
+    let volumeInside = this.el.querySelector("#player-volume");
+
+    volumeOutside.addEventListener("click", (e) => {
+      volumeInside.style.width = e.offsetX + "px";
+
+      let percent = Math.floor((e.offsetX / volumeOutside.offsetWidth) * 100);
+      this.player.volume = percent / 100;
+
+      this.pushEvent("volume", { volume: percent / 100 });
+    });
+
+    this.handleEvent("set_volume", ({ volume }) => {
+      console.log(volume, "volume");
+      volumeInside.style.width = volume * 100 + "%";
+      this.player.volume = volume;
+    });
   },
 
   clearNextTimer() {
@@ -134,8 +153,9 @@ Hooks.AudioPlayer = {
       );
       return;
     }
-    this.progress.style.width = `${(this.player.currentTime / this.player.duration) * 100
-      }%`;
+    this.progress.style.width = `${
+      (this.player.currentTime / this.player.duration) * 100
+    }%`;
     this.duration.innerText = this.formatTime(this.player.duration);
     this.currentTime.innerText = this.formatTime(this.player.currentTime);
   },
@@ -214,7 +234,7 @@ let Focus = {
     }
     try {
       el.focus();
-    } catch (e) { }
+    } catch (e) {}
 
     return document.activeElement === el;
   },

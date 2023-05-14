@@ -26,8 +26,24 @@ defmodule NotSpotify.Media.PlayingProcess do
     GenServer.call(process_name(user), :song_queue)
   end
 
+  def set_volume(user, volume) do
+    start_if_not_running(user)
+    GenServer.cast(process_name(user), {:set_volume, volume})
+  end
+
+  def get_volume(user) do
+    start_if_not_running(user)
+    GenServer.call(process_name(user), :get_volume)
+  end
+
   defmodule State do
-    defstruct song: nil, playing: false, song_queue: [], user: nil, history: [], song_ref: nil
+    defstruct song: nil,
+              playing: false,
+              song_queue: [],
+              user: nil,
+              history: [],
+              song_ref: nil,
+              volume: 1
   end
 
   def start(user) do
@@ -136,6 +152,14 @@ defmodule NotSpotify.Media.PlayingProcess do
 
   def handle_info({:stop_song, _}, state) do
     {:noreply, state}
+  end
+
+  def handle_cast({:set_volume, volume}, state) do
+    {:noreply, %{state | volume: volume}}
+  end
+
+  def handle_call(:get_volume, _from, %State{volume: volume} = state) do
+    {:reply, volume, state}
   end
 
   def handle_call(:playing?, _from, state) do
