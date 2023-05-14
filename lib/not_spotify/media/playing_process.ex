@@ -91,6 +91,7 @@ defmodule NotSpotify.Media.PlayingProcess do
         %State{} = state
       ) do
     ref = make_ref()
+    elapsed = elapsed || 0
     Process.send_after(self(), {:stop_song, ref}, :timer.seconds(song.duration - elapsed))
     {:noreply, %State{state | song: song, playing: true, song_ref: ref}}
   end
@@ -104,11 +105,20 @@ defmodule NotSpotify.Media.PlayingProcess do
   end
 
   def handle_info({Media, %Events.AddToQueue{song: song}}, %State{song_queue: song_queue} = state) do
-    {:noreply, %{state | song_queue: song_queue ++ [song]}}
+    {:noreply, %State{state | song_queue: song_queue ++ [song]}}
   end
 
   def handle_info({Media, Events.Next}, %State{song_queue: [], user: user} = state) do
-    broadcast_stop(user)
+    [song | queue] = Media.list_songs()
+    MusicBus.broadcast(User.process_name(user), {Media, %Events.Play{song: song}})
+
+    queue
+    |> List.delete(song)
+
+    Enum.each(queue, fn song ->
+      MusicBus.broadcast(User.process_name(user), {Media, %Events.AddToQueue{song: song}})
+    end)
+
     {:noreply, state}
   end
 

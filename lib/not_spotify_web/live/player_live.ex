@@ -6,6 +6,7 @@ defmodule NotSpotifyWeb.PlayerLive do
   alias NotSpotify.Accounts.User
   alias NotSpotify.Media
   alias NotSpotify.Media.Song
+  alias NotSpotify.Media.Events
 
   on_mount({NotSpotifyWeb.UserAuth, :current_user})
 
@@ -199,6 +200,10 @@ defmodule NotSpotifyWeb.PlayerLive do
 
   def terminate(_reason, socket) do
     PlayingProcess.set_elapsed(socket.assigns.current_user, 0)
+
+    MusicBus.broadcast(User.process_name(socket.assigns.current_user), {Media, Events.ClearQueue})
+
+    MusicBus.leave(User.process_name(socket.assigns.current_user))
     {:ok, socket}
   end
 
