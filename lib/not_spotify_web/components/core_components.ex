@@ -763,7 +763,7 @@ defmodule NotSpotifyWeb.CoreComponents do
     ~H"""
     <div
       id={"#{@id}-container"}
-      class={"flex-auto rounded-full overflow-hidden bg-brand-black #{@class}"}
+      class={"flex-auto rounded-full overflow-hidden bg-brand-black max-h-1.5 #{@class}"}
       phx-update="ignore"
     >
       <div

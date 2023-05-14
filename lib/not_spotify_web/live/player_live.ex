@@ -142,11 +142,21 @@ defmodule NotSpotifyWeb.PlayerLive do
 
         <div
           id="player-info"
-          class="flex flex-col text-brand-orange justify-self-start text-sm font-medium tabular-nums pl-2 sm:pl-3 lg:pl-2 xl:pl-3 w-20 sm:w-full"
+          class="flex flex-col text-brand-orange justify-self-start text-sm font-medium tabular-nums pl-2 sm:pl-3 lg:pl-2 xl:pl-3 w-20 sm:w-full grid grid-cols-3"
           phx-update="ignore"
         >
-          <div id="player-time"></div>
-          <div id="player-duration"></div>
+          <div class="flex-col-1">
+            <div id="player-time"></div>
+            <div id="player-duration"></div>
+          </div>
+          <div class="float-right md-2 flex-col-1 my-auto grid grid-cols-2">
+            <FontAwesome.LiveView.icon
+              name="volume-high"
+              type="solid"
+              class="h-5 w-5 inline fill-brand-orange hover:fill-orange-600 justify-self-end mr-2"
+            />
+            <.progress_bar id="player-volume" class="cursor-pointer min-w-20 w-20 md:w-40 my-auto" />
+          </div>
         </div>
       </div>
 
@@ -166,6 +176,7 @@ defmodule NotSpotifyWeb.PlayerLive do
 
   def mount(_params, _session, socket) do
     %{current_user: current_user} = socket.assigns
+    volume = PlayingProcess.get_volume(current_user)
 
     socket =
       socket
@@ -176,8 +187,10 @@ defmodule NotSpotifyWeb.PlayerLive do
         current_user_id: current_user.id,
         own_profile?: false,
         song_queue: PlayingProcess.song_queue(current_user),
-        songs: Media.list_songs()
+        songs: Media.list_songs(),
+        volume: volume
       )
+      |> push_set_volume(volume)
 
     MusicBus.join(User.process_name(current_user))
 
@@ -243,6 +256,18 @@ defmodule NotSpotifyWeb.PlayerLive do
     MusicBus.broadcast(User.process_name(current_user), {Media, Media.Events.ClearQueue})
 
     {:noreply, socket}
+  end
+
+  def handle_event("volume", %{"volume" => volume}, socket) do
+    current_user = socket.assigns.current_user
+
+    PlayingProcess.set_volume(current_user, volume)
+
+    new_socket =
+      socket
+      |> assign(volume: volume)
+
+    {:noreply, new_socket}
   end
 
   def handle_info(:play_current, socket) do
@@ -328,6 +353,10 @@ defmodule NotSpotifyWeb.PlayerLive do
     socket
     |> push_event("pause", %{})
     |> assign(playing: false)
+  end
+
+  defp push_set_volume(socket, volume) do
+    push_event(socket, "set_volume", %{volume: volume})
   end
 
   defp js_play_pause() do
