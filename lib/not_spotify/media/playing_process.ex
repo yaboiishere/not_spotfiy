@@ -88,7 +88,7 @@ defmodule NotSpotify.Media.PlayingProcess do
 
   def handle_info(
         {Media, %Events.Play{song: song, elapsed: elapsed}},
-        %State{song: current_song} = state
+        %State{} = state
       ) do
     ref = make_ref()
     Process.send_after(self(), {:stop_song, ref}, :timer.seconds(song.duration - elapsed))
