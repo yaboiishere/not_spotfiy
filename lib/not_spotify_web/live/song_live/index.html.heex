@@ -35,18 +35,30 @@
         phx-click={JS.push("delete", value: %{id: song.id}) |> hide("##{id}")}
         data-confirm="Are you sure?"
       >
-        <FontAwesome.LiveView.icon name="trash-can" type="solid" class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300" />
+        <FontAwesome.LiveView.icon
+          name="trash-can"
+          type="solid"
+          class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300"
+        />
       </.link>
     <% end %>
   </:action>
   <:action :let={{_id, song}}>
     <.link phx-click={JS.push("play", value: %{id: song.id})}>
-      <FontAwesome.LiveView.icon name="play" type="solid" class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300" />
+      <FontAwesome.LiveView.icon
+        name="play"
+        type="solid"
+        class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300"
+      />
     </.link>
   </:action>
   <:action :let={{_id, song}}>
     <.link phx-click={JS.push("addToQueue", value: %{id: song.id})}>
-      <FontAwesome.LiveView.icon name="circle-plus" type="solid" class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300" />
+      <FontAwesome.LiveView.icon
+        name="circle-plus"
+        type="solid"
+        class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300"
+      />
     </.link>
   </:action>
 </.table>
