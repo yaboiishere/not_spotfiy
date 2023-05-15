@@ -137,7 +137,10 @@ defmodule NotSpotifyWeb.PlayerLive do
             </button>
           </div>
           <div class="flex-row w-full pt-1 pb-3">
-            <.progress_bar id="player-progress" class="cursor-pointer" disabled={@playing} />
+            <.progress_bar
+              id="player-progress"
+              class={"cursor-pointer #{if not @playing, do: "disabled", else: ""}"}
+            />
           </div>
         </div>
 
