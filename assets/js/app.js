@@ -77,10 +77,14 @@ Hooks.AudioPlayer = {
     outside.addEventListener(
       "click",
       (e) => {
+      let disabled = outside.classList.contains("disabled")
+      if (!disabled) {
         inside.style.width = e.offsetX + "px";
 
         let percent = Math.floor((e.offsetX / outside.offsetWidth) * 100);
         this.player.currentTime = (percent / 100) * this.player.duration;
+        this.pushEvent("seeked", { seeked: this.player.currentTime });
+      }
       },
       false
     );
@@ -129,6 +133,7 @@ Hooks.AudioPlayer = {
 
   pause() {
     clearInterval(this.progressTimer);
+    this.pushEvent("paused_at", {paused_at: this.player.currentTime});
     this.player.pause();
   },
 

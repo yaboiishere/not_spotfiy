@@ -74,10 +74,16 @@ defmodule NotSpotify.Media do
 
   def play_song(id, %User{} = user) do
     song = get_song!(id)
+    active_song = PlayingProcess.active_song(user)
+
+    elapsed =
+      user
+      |> elapsed_playback()
+      |> then(fn el -> if song == active_song, do: el, else: 0 end)
 
     MusicBus.broadcast(
       User.process_name(user),
-      {Media, %Events.Play{song: song, elapsed: 0}}
+      {Media, %Events.Play{song: song, elapsed: elapsed}}
     )
 
     song
@@ -110,9 +116,8 @@ defmodule NotSpotify.Media do
     PlayingProcess.active_song(user)
   end
 
-  def elapsed_playback(%User{} = _user) do
-    # PlayingProcess.elapsed_playback(user)
-    0
+  def elapsed_playback(%User{} = user) do
+    PlayingProcess.elapsed(user)
   end
 
   # def elapsed_playback(%User{} = user) do
