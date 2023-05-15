@@ -62,11 +62,9 @@ defmodule NotSpotifyWeb.SongLive.FormComponent do
         "save",
         %{"song" => song_params},
         %{
-          assigns: %{action: action, current_user: current_user}
+          assigns: %{action: action}
         } = socket
       ) do
-    song_params = Map.put(song_params, "artist_id", current_user.id)
-
     save_song(socket, action, song_params)
   end
 
