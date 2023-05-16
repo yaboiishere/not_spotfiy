@@ -24,6 +24,18 @@ defmodule NotSpotifyWeb.SongLive.Show do
      |> assign(:song, song)}
   end
 
+  @impl true
+  def handle_event("delete", %{"song-id" => id}, socket) do
+    song = Media.get_song!(id)
+    {:ok, _} = Media.delete_song(song)
+
+    new_socket =
+      socket
+      |> push_navigate(to: "/", replace: true)
+
+    {:noreply, new_socket}
+  end
+
   defp page_title(:show), do: "Show Song"
   defp page_title(:edit), do: "Edit Song"
 end

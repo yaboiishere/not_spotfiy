@@ -1,11 +1,13 @@
-<.header>
-  Listing Songs
-  <:actions>
-    <.link patch={~p"/songs/new"}>
-      <.button>New Song</.button>
-    </.link>
-  </:actions>
-</.header>
+<div class="px-3">
+  <.header>
+    Listing Songs
+    <:actions>
+      <.link patch={~p"/songs/new"}>
+        <.button>New Song</.button>
+      </.link>
+    </:actions>
+  </.header>
+</div>
 
 <.table
   id="songs"
@@ -23,26 +25,40 @@
     <div class="sr-only">
       <.link navigate={~p"/songs/#{song}"}>Show</.link>
     </div>
-    <.link patch={~p"/songs/#{song}/edit"}>
-      <FontAwesome.LiveView.icon name="pen-to-square" type="solid" class="h-5 w-5 inline" />
-    </.link>
   </:action>
   <:action :let={{id, song}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: song.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
-    >
-      <FontAwesome.LiveView.icon name="trash-can" type="solid" class="h-5 w-5 inline" />
-    </.link>
+    <%= if @current_user.id == song.user_id or @current_user.is_admin do %>
+      <.link patch={~p"/songs/#{song}/edit"} class="fill-zinc-100 hover:fill-zinc-300 mr-4">
+        <FontAwesome.LiveView.icon name="pen-to-square" type="solid" class="h-5 w-5 inline" />
+      </.link>
+      <.link
+        phx-click={JS.push("delete", value: %{id: song.id}) |> hide("##{id}")}
+        data-confirm="Are you sure?"
+      >
+        <FontAwesome.LiveView.icon
+          name="trash-can"
+          type="solid"
+          class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300"
+        />
+      </.link>
+    <% end %>
   </:action>
   <:action :let={{_id, song}}>
     <.link phx-click={JS.push("play", value: %{id: song.id})}>
-      <FontAwesome.LiveView.icon name="play" type="solid" class="h-5 w-5 inline" />
+      <FontAwesome.LiveView.icon
+        name="play"
+        type="solid"
+        class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300"
+      />
     </.link>
   </:action>
   <:action :let={{_id, song}}>
     <.link phx-click={JS.push("addToQueue", value: %{id: song.id})}>
-      <FontAwesome.LiveView.icon name="circle-plus" type="solid" class="h-5 w-5 inline" />
+      <FontAwesome.LiveView.icon
+        name="circle-plus"
+        type="solid"
+        class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300"
+      />
     </.link>
   </:action>
 </.table>
@@ -50,7 +66,7 @@
 <.modal :if={@live_action in [:edit]} id="song-modal" show on_cancel={JS.patch(~p"/songs")}>
   <.live_component
     module={NotSpotifyWeb.SongLive.FormComponent}
-    id={@song.id || :new}
+    id={@song.id}
     title={@page_title}
     action={@live_action}
     song={@song}

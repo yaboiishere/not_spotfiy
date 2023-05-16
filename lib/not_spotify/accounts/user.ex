@@ -12,6 +12,7 @@ defmodule NotSpotify.Accounts.User do
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
+    field :is_admin, :boolean, default: false
 
     timestamps()
   end
@@ -43,7 +44,7 @@ defmodule NotSpotify.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password, :username])
+    |> cast(attrs, [:email, :password, :username, :is_admin])
     |> validate_email(opts)
     |> validate_password(opts)
   end

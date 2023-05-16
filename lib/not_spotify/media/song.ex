@@ -10,6 +10,7 @@ defmodule NotSpotify.Media.Song do
   @attrs [
     :title,
     :album_artist,
+    :album,
     :date_recorded,
     :date_released,
     :artist,
@@ -28,6 +29,7 @@ defmodule NotSpotify.Media.Song do
     field(:date_recorded, :naive_datetime)
     field(:date_released, :naive_datetime)
     field(:artist, :string)
+    field(:album, :string)
     field(:genre, :string)
     field(:duration, :integer)
     field(:mp3_url, :string)
