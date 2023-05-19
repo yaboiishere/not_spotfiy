@@ -523,6 +523,7 @@ defmodule NotSpotifyWeb.CoreComponents do
   attr :rows, :list, required: true
   attr :row_id, :any, default: nil, doc: "the function for generating the row id"
   attr :row_click, :any, default: nil, doc: "the function for handling phx-click on each row"
+  attr :sorting, :any, default: nil, doc: "how to sort the rows"
 
   attr :row_item, :any,
     default: &Function.identity/1,
@@ -530,6 +531,7 @@ defmodule NotSpotifyWeb.CoreComponents do
 
   slot :col, required: true do
     attr :label, :string
+    attr :name, :string
     attr :hidden, :boolean
     attr :class, :string
   end
@@ -555,14 +557,20 @@ defmodule NotSpotifyWeb.CoreComponents do
                 col[:class]
               ]}
             >
-              <%= col[:label] %>
+              <.live_component
+                module={NotSpotifyWeb.SortingComponent}
+                id={"sorting-by-#{col[:name]}"}
+                name={col[:name]}
+                label={col[:label]}
+                sorting={@sorting}
+              />
             </th>
             <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
           </tr>
         </thead>
         <tbody
           id={@id}
-          phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
+          phx-update="replace"
           class="relative divide-y divide-brand-orange border-t border-brand-orange text-sm leading-6 text-zinc-100"
         >
           <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group">

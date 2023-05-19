@@ -18,8 +18,8 @@ defmodule NotSpotify.Media do
 
   alias Ecto.Multi
 
-  def list_songs do
-    Song
+  def list_songs(params \\ %{}) do
+    from(s in Song, order_by: ^filter_order_by(params))
     |> Repo.all()
     |> Repo.preload(:user)
   end
@@ -203,4 +203,12 @@ defmodule NotSpotify.Media do
     File.mkdir_p!(Path.dirname(song.mp3_filepath))
     File.cp!(tmp_path, song.mp3_filepath)
   end
+
+  defp filter_order_by(%{"sort_by" => name, "sort_dir" => dir}) do
+    atom_name = String.to_atom(name)
+    atom_dir = String.to_atom(dir)
+    [{atom_dir, atom_name}]
+  end
+
+  defp filter_order_by(_), do: []
 end

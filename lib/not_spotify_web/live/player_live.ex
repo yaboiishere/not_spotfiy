@@ -212,6 +212,7 @@ defmodule NotSpotifyWeb.PlayerLive do
     {:ok, socket}
   end
 
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def handle_event("play_pause", _params, socket) do
     %{song: song, playing: playing, songs: songs} = socket.assigns
     current_user = socket.assigns.current_user
@@ -327,7 +328,7 @@ defmodule NotSpotifyWeb.PlayerLive do
   end
 
   def handle_info({Media, _}, socket), do: {:noreply, socket}
-  def handle_info({:update, _}, socket), do: {:noreply, socket}
+  def handle_info({:update, _, _}, socket), do: {:noreply, socket}
 
   defp play_song(socket, %Song{} = song, elapsed) do
     socket

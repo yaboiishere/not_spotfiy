@@ -1,6 +1,7 @@
 defmodule NotSpotifyWeb.SongLive.Index do
   use NotSpotifyWeb, :live_view
 
+  alias NotSpotifyWeb.SortingHelpers
   alias NotSpotify.Media.Events
   alias NotSpotify.MusicBus
   alias NotSpotify.Media
@@ -12,17 +13,32 @@ defmodule NotSpotifyWeb.SongLive.Index do
   alias NotSpotifyWeb.SongLive.UploadFormComponent
 
   @impl true
-  def mount(_params, %{"user_token" => user_token}, socket) do
+  def mount(params, %{"user_token" => user_token}, socket) do
     current_user = Accounts.get_user_by_session_token(user_token)
 
     MusicBus.join(User.process_name(current_user))
 
     new_socket =
       socket
-      |> assign(:current_user, current_user)
-      |> stream(:songs, Media.list_songs())
+      |> assign(current_user: current_user, sorting: SortingHelpers.default_values())
+      |> assign(:songs, Media.list_songs(params))
 
     {:ok, new_socket}
+  end
+
+  def handle_params(%{"sort_by" => _} = params, _url, socket) do
+    params
+    |> SortingHelpers.changeset(socket.assigns.sorting)
+    |> case do
+      {:ok, sorting} ->
+        socket
+        |> assign(:songs, Media.list_songs(params))
+        |> assign(:sorting, sorting)
+
+      {:error, _changeset} ->
+        socket
+    end
+    |> then(fn socket -> {:noreply, socket} end)
   end
 
   @impl true
@@ -60,15 +76,22 @@ defmodule NotSpotifyWeb.SongLive.Index do
   end
 
   @impl true
-  def handle_info({:update, :index, songs}, socket) do
-    new_socket =
-      songs
-      |> Map.values()
-      |> Enum.reduce(socket, fn song, sock ->
-        stream_insert(sock, :songs, song)
-      end)
+  def handle_info({:update, :index, new_songs}, socket) do
+    songs = socket.assigns.songs
+    new_songs = new_songs |> Map.values()
 
-    {:noreply, new_socket}
+    new_socket = assign(socket, :songs, songs ++ new_songs)
+
+    {:noreply, push_patch(new_socket, to: Routes.live_path(socket, __MODULE__, %{}))}
+  end
+
+  def handle_info({:update, opts}, socket) do
+    params = merge_params(socket, opts)
+    path = Routes.live_path(socket, __MODULE__, params)
+
+    new_socket = assign(socket, :songs, Media.list_songs(params))
+
+    {:noreply, push_patch(new_socket, to: path)}
   end
 
   def handle_info({Media, _}, socket) do
@@ -76,11 +99,13 @@ defmodule NotSpotifyWeb.SongLive.Index do
   end
 
   @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
+  def handle_event("delete", %{"id" => id}, %{assigns: %{songs: songs}} = socket) do
     song = Media.get_song!(id)
     {:ok, _} = Media.delete_song(song)
 
-    {:noreply, stream_delete(socket, :songs, song)}
+    new_socket = assign(socket, :songs, List.delete(songs, song))
+
+    {:noreply, push_patch(new_socket, to: Routes.live_path(socket, __MODULE__, %{}))}
   end
 
   def handle_event("play", %{"id" => id}, socket) do
@@ -110,5 +135,13 @@ defmodule NotSpotifyWeb.SongLive.Index do
     })
 
     socket
+  end
+
+  defp merge_params(socket, overrides) do
+    %{sorting: sorting} = socket.assigns
+
+    %{}
+    |> Map.merge(sorting)
+    |> Map.merge(overrides)
   end
 end

@@ -22,7 +22,7 @@ defmodule NotSpotifyWeb do
 
   def router do
     quote do
-      use Phoenix.Router, helpers: false
+      use Phoenix.Router
 
       # Import common connection and controller functions to use in pipelines
       import Plug.Conn
@@ -61,6 +61,7 @@ defmodule NotSpotifyWeb do
               unquote(opts)
             )
       use Phoenix.LiveView, @opts
+      alias NotSpotifyWeb.Router.Helpers, as: Routes
 
       unquote(html_helpers())
     end
