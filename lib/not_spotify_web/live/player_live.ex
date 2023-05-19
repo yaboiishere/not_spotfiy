@@ -146,20 +146,22 @@ defmodule NotSpotifyWeb.PlayerLive do
 
         <div
           id="player-info"
-          class="flex flex-col text-brand-orange justify-self-start text-sm font-medium tabular-nums pl-2 sm:pl-3 lg:pl-2 xl:pl-3 w-20 sm:w-full grid grid-cols-3"
+          class="flex flex-col text-brand-orange justify-self-start text-sm font-medium tabular-nums pl-2 sm:pl-3 lg:pl-2 xl:pl-3 w-20 sm:w-full grid grid-rows-2 md:grid-rows-3"
           phx-update="ignore"
         >
-          <div class="flex-col-1">
-            <div id="player-time"></div>
-            <div id="player-duration"></div>
-          </div>
-          <div class="float-right md-2 flex-col-1 my-auto grid grid-cols-2">
+          <div class="hidden md:block" />
+          <div class="md-2 flex-col-1 my-auto grid grid-cols-2">
             <FontAwesome.LiveView.icon
               name="volume-high"
               type="solid"
               class="h-5 w-5 inline fill-brand-orange hover:fill-orange-600 justify-self-end mr-2"
             />
-            <.progress_bar id="player-volume" class="cursor-pointer min-w-20 w-20 md:w-40 my-auto" />
+            <.progress_bar id="player-volume" class="cursor-pointer w-16 md:w-40 my-auto" />
+          </div>
+          <div class="flex justify-start w-max mt-2 md:mt-0">
+            <p id="player-time">00:00</p>
+            <p class="w-1">/</p>
+            <span id="player-duration">00:00</span>
           </div>
         </div>
       </div>
