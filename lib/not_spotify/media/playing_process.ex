@@ -183,6 +183,10 @@ defmodule NotSpotify.Media.PlayingProcess do
     {:noreply, %{state | song_queue: []}}
   end
 
+  def handle_info({Media, %Events.Seeked{seeked: seeked}}, state) do
+    {:noreply, %{state | elapsed: seeked}}
+  end
+
   def handle_info({:stop_song, ref}, %State{song_ref: ref} = state) do
     {:noreply, %{state | song: nil, playing: false, elapsed: 0}}
   end

@@ -43,4 +43,9 @@ defmodule NotSpotify.Media.Events do
   defmodule ClearQueue do
     @moduledoc false
   end
+
+  defmodule Seeked do
+    @moduledoc false
+    defstruct seeked: nil
+  end
 end

@@ -320,6 +320,10 @@ defmodule NotSpotifyWeb.PlayerLive do
     {:noreply, stop_song(socket)}
   end
 
+  def handle_info({Media, %Media.Events.Seeked{seeked: seeked}}, socket) do
+    {:noreply, push_seek(socket, seeked)}
+  end
+
   def handle_info({Media, _}, socket), do: {:noreply, socket}
   def handle_info({:update, _}, socket), do: {:noreply, socket}
 
@@ -385,6 +389,10 @@ defmodule NotSpotifyWeb.PlayerLive do
     push_event(socket, "set_volume", %{volume: volume})
   end
 
+  defp push_seek(socket, seeked) do
+    push_event(socket, "seek", %{seeked: seeked})
+  end
+
   defp js_play_pause() do
     JS.push("play_pause")
     |> JS.dispatch("js:play_pause", to: "#audio-player")
@@ -405,6 +413,9 @@ defmodule NotSpotifyWeb.PlayerLive do
   defp set_elapsed(current_user, elapsed) do
     seeked = round(elapsed)
 
-    PlayingProcess.set_elapsed(current_user, seeked)
+    MusicBus.broadcast(
+      User.process_name(current_user),
+      {Media, %Media.Events.Seeked{seeked: seeked}}
+    )
   end
 end
