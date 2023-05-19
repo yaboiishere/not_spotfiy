@@ -1,4 +1,7 @@
 defmodule NotSpotify.Media.PlayingProcess do
+  @moduledoc """
+  This module represents a user and his state regarding to playing music.
+  """
   use GenServer
 
   alias NotSpotify.Media
@@ -47,6 +50,7 @@ defmodule NotSpotify.Media.PlayingProcess do
   end
 
   defmodule State do
+    @moduledoc false
     defstruct song: nil,
               playing: false,
               song_queue: [],
@@ -192,6 +196,10 @@ defmodule NotSpotify.Media.PlayingProcess do
   end
 
   def handle_info({:stop_song, _}, state) do
+    {:noreply, state}
+  end
+
+  def handle_info({:update, _, _}, state) do
     {:noreply, state}
   end
 
