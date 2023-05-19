@@ -114,8 +114,7 @@ defmodule NotSpotify.Media.PlayingProcess do
 
     queue
     |> List.delete(song)
-
-    Enum.each(queue, fn song ->
+    |> Enum.each(fn song ->
       MusicBus.broadcast(User.process_name(user), {Media, %Events.AddToQueue{song: song}})
     end)
 
