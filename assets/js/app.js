@@ -71,20 +71,23 @@ Hooks.AudioPlayer = {
     });
     this.handleEvent("pause", () => this.pause());
     this.handleEvent("stop", () => this.stop());
+    this.handleEvent("seek", ({ seeked }) => {
+      this.player.currentTime = seeked;
+    });
     let outside = this.el.querySelector("#player-progress-container");
     let inside = this.el.querySelector("#player-progress");
 
     outside.addEventListener(
       "click",
       (e) => {
-      let disabled = outside.classList.contains("disabled")
-      if (!disabled) {
-        inside.style.width = e.offsetX + "px";
+        let disabled = outside.classList.contains("disabled");
+        if (!disabled) {
+          inside.style.width = e.offsetX + "px";
 
-        let percent = Math.floor((e.offsetX / outside.offsetWidth) * 100);
-        this.player.currentTime = (percent / 100) * this.player.duration;
-        this.pushEvent("seeked", { seeked: this.player.currentTime });
-      }
+          let percent = Math.floor((e.offsetX / outside.offsetWidth) * 100);
+          this.player.currentTime = (percent / 100) * this.player.duration;
+          this.pushEvent("seeked", { seeked: this.player.currentTime });
+        }
       },
       false
     );
@@ -133,7 +136,7 @@ Hooks.AudioPlayer = {
 
   pause() {
     clearInterval(this.progressTimer);
-    this.pushEvent("paused_at", {paused_at: this.player.currentTime});
+    this.pushEvent("paused_at", { paused_at: this.player.currentTime });
     this.player.pause();
   },
 

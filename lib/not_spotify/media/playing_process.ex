@@ -114,8 +114,7 @@ defmodule NotSpotify.Media.PlayingProcess do
 
     queue
     |> List.delete(song)
-
-    Enum.each(queue, fn song ->
+    |> Enum.each(fn song ->
       MusicBus.broadcast(User.process_name(user), {Media, %Events.AddToQueue{song: song}})
     end)
 
@@ -182,6 +181,10 @@ defmodule NotSpotify.Media.PlayingProcess do
 
   def handle_info({Media, Events.ClearQueue}, state) do
     {:noreply, %{state | song_queue: []}}
+  end
+
+  def handle_info({Media, %Events.Seeked{seeked: seeked}}, state) do
+    {:noreply, %{state | elapsed: seeked}}
   end
 
   def handle_info({:stop_song, ref}, %State{song_ref: ref} = state) do

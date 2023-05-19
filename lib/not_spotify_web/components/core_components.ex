@@ -530,6 +530,8 @@ defmodule NotSpotifyWeb.CoreComponents do
 
   slot :col, required: true do
     attr :label, :string
+    attr :hidden, :boolean
+    attr :class, :string
   end
 
   slot :action, doc: "the slot for showing user actions in the last table column"
@@ -541,11 +543,18 @@ defmodule NotSpotifyWeb.CoreComponents do
       end
 
     ~H"""
-    <div class="table-auto px-4 md:overflow-visible sm:px-2 m:w-full">
-      <table class="w-[40rem] mt-11 sm:w-full ">
+    <div class="table-auto px-4 overflow-y-visible md:overflow-visible sm:px-2 m:w-full">
+      <table class="w-full mt-11">
         <thead class="text-sm text-left leading-6 text-brand-orange">
           <tr>
-            <th :for={col <- @col} class="p-0 pr-6 pb-4 font-normal whitespace-nowrap">
+            <th
+              :for={col <- @col}
+              class={[
+                "p-0 pr-6 pb-4 font-normal whitespace-nowrap",
+                if(col[:hidden], do: "hidden md:table-cell", else: ""),
+                col[:class]
+              ]}
+            >
               <%= col[:label] %>
             </th>
             <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
@@ -560,21 +569,30 @@ defmodule NotSpotifyWeb.CoreComponents do
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
-              class={["relative p-0", @row_click && "hover:cursor-pointer whitespace-nowrap"]}
+              class={[
+                "relative p-0",
+                @row_click && "hover:cursor-pointer",
+                if(col[:hidden], do: "hidden md:table-cell", else: "")
+              ]}
             >
               <div class="block py-4 pr-6">
                 <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-brand-orange sm:rounded-l-xl" />
-                <span class={["relative", i == 0 && "font-semibold text-zinc-100"]}>
+                <span class={[
+                  "relative",
+                  i == 0 && "font-semibold text-zinc-100",
+                  if(col[:hidden], do: "hidden md:table-cell", else: ""),
+                  col[:class]
+                ]}>
                   <%= render_slot(col, @row_item.(row)) %>
                 </span>
               </div>
             </td>
-            <td :if={@action != []} class="relative w-14 p-0 ">
-              <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
+            <td :if={@action != []} class="relative md:w-14 p-0 ">
+              <div class="relative py-4 text-right text-sm font-medium grid grid-rows-2 grid-cols-2 md:grid-rows-1 md:grid-cols-5 gap-y-2 gap-x-3 md:gap-7">
                 <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-brand-orange sm:rounded-r-xl" />
                 <span
                   :for={action <- @action}
-                  class="relative ml-4 font-semibold leading-6 fill-zinc-100 hover:fill-zinc-300"
+                  class="relative font-semibold leading-6 fill-zinc-100 hover:fill-zinc-300 c-span-1"
                 >
                   <%= render_slot(action, @row_item.(row)) %>
                 </span>
