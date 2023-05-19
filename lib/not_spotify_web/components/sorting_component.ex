@@ -11,11 +11,11 @@ defmodule NotSpotifyWeb.SortingComponent do
       phx-click="sort_by_column"
       phx-target={@myself}
       phx-value-column={@name}
-      class="sorting-header"
+      class="sorting-header hover:cursor-pointer hover:text-orange-600"
     >
       <%= @label %> <%= chevron(
         @sorting,
-        @name
+        maybe_to_atom(@name)
       ) %>
     </div>
     """
@@ -40,4 +40,7 @@ defmodule NotSpotifyWeb.SortingComponent do
   def chevron(%{sort_by: sort_by, sort_dir: :asc}, sort_by), do: "⇧"
   def chevron(%{sort_by: sort_by, sort_dir: :desc}, sort_by), do: "⇩"
   def chevron(_opts, _column), do: ""
+
+  defp maybe_to_atom(value) when is_binary(value), do: String.to_atom(value)
+  defp maybe_to_atom(value), do: value
 end
