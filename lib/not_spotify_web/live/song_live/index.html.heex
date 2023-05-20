@@ -15,7 +15,7 @@
   id="songs"
   rows={@songs}
   sorting={@sorting}
-  row_click={fn song -> JS.navigate(~p"/songs/#{song}") end}
+  row_click={fn song -> JS.push("play", value: %{id: song.id}) end}
   row_id={fn song -> "song-#{song.id}" end}
 >
   <:col :let={song} label="Title" name="title" class="break-all"><%= song.title %></:col>
@@ -49,9 +49,9 @@
     <% end %>
   </:action>
   <:action :let={song}>
-    <.link phx-click={JS.push("play", value: %{id: song.id})}>
+    <.link phx-click={JS.navigate(~p"/songs/#{song}")}>
       <FontAwesome.LiveView.icon
-        name="play"
+        name="circle-info"
         type="solid"
         class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300"
       />
