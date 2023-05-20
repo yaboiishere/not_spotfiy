@@ -38,7 +38,20 @@ defmodule NotSpotifyWeb.PlayerLive do
         </div>
         <div class="grid grid-cols-1">
           <div class="flex flex-row justify-around">
-            <div class="mx-auto flex"></div>
+            <!-- stop_queue -->
+            <button
+              type="button"
+              class="sm:block xl:block mx-auto scale-75 hover:text-orange-600"
+              phx-click={js_prev()}
+              aria-label="stop_queue"
+            >
+              <FontAwesome.LiveView.icon
+                name="circle-stop"
+                type="solid"
+                class="h-6 w-6 fill-brand-orange hover:fill-orange-600"
+              />
+            </button>
+            <!-- /stop_queue -->
             <!-- prev -->
             <button
               type="button"

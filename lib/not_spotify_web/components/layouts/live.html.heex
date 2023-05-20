@@ -3,7 +3,26 @@
     <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
       <li class="text-[0.8125rem] leading-6 text-brand-orange justify-self-start">
         <a href="/">
-          <img src={~p"/images/logo.svg"} width="36" />
+          <svg
+            id="Layer_1"
+            data-name="Layer 1"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 315.21 243.68"
+            width="35px"
+            height="35px"
+          >
+            <defs>
+              <style>
+                .cls-1,.cls-2{fill:#f79757;}.cls-2{font-size:105px;font-family:BeckmanFREE, Beckman;}
+              </style>
+            </defs>
+            <path
+              class="cls-1"
+              d="M266.38,418.5a27.12,27.12,0,1,1-17.91-25.14V303.08l18.62,10.73,26,15,1,.56,5-5.48-75.08-43.35A14.44,14.44,0,0,0,202.39,293V499a14.44,14.44,0,0,0,21.66,12.5l178.35-103a14.44,14.44,0,0,0,0-25l-44.9-25.93V286.4h-8V399.25a27.13,27.13,0,1,1-27.12-26.74,27.27,27.27,0,0,1,9.93,1.87v-59.5l-.57.62-16.33,17.75-15.8,17.15-1.92,2.1-31.06-17.88Z"
+              transform="translate(-202.39 -269.75)"
+            />
+            <text class="cls-2" transform="translate(162.71 88.57)">TU</text>
+          </svg>
         </a>
       </li>
     </ul>
@@ -17,7 +36,11 @@
             href={~p"/users/settings"}
             class="text-[0.8125rem] leading-6 font-semibold hover:fill-orange-600 fill-brand-orange"
           >
-            <FontAwesome.LiveView.icon name="gear" type="solid" class="h-5 w-5" />
+            <FontAwesome.LiveView.icon
+              name="gear"
+              type="solid"
+              class="h-5 w-5 fill-brand-orange hover:fill-orange-600"
+            />
           </.link>
         </li>
         <li>
@@ -26,7 +49,11 @@
             method="delete"
             class="text-[0.8125rem] leading-6 font-semibold hover:text-orange-600"
           >
-            Log Out
+            <FontAwesome.LiveView.icon
+              name="right-from-bracket"
+              type="solid"
+              class="h-5 w-5 fill-brand-orange hover:fill-orange-600"
+            />
           </.link>
         </li>
       <% else %>
@@ -35,7 +62,11 @@
             href={~p"/users/register"}
             class="text-[0.8125rem] leading-6 font-semibold hover:text-orange-600"
           >
-            Register
+            <FontAwesome.LiveView.icon
+              name="user-plus"
+              type="solid"
+              class="h-5 w-5 fill-brand-orange hover:fill-orange-600"
+            />
           </.link>
         </li>
         <li>
@@ -43,7 +74,11 @@
             href={~p"/users/log_in"}
             class="text-[0.8125rem] leading-6 font-semibold hover:text-orange-600"
           >
-            Log In
+            <FontAwesome.LiveView.icon
+              name="right-to-bracket"
+              type="solid"
+              class="h-5 w-5 fill-brand-orange hover:fill-orange-600"
+            />
           </.link>
         </li>
       <% end %>
