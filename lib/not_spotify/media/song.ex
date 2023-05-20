@@ -28,8 +28,8 @@ defmodule NotSpotify.Media.Song do
   schema "songs" do
     field(:title, :string)
     field(:album_artist, :string)
-    field(:date_recorded, :naive_datetime)
-    field(:date_released, :naive_datetime)
+    field(:date_recorded, :string)
+    field(:date_released, :string)
     field(:artist, :string)
     field(:album, :string)
     field(:genre, :string)
@@ -63,6 +63,7 @@ defmodule NotSpotify.Media.Song do
   def put_stats(%Ecto.Changeset{} = changeset, %NotSpotify.MP3Stat{} = stat) do
     changeset
     |> put_duration(stat.duration)
+    |> put_mp3_data(stat)
     |> Ecto.Changeset.put_change(:mp3_filesize, stat.size)
   end
 
@@ -98,5 +99,29 @@ defmodule NotSpotify.Media.Song do
   defp mp3_url(filename) do
     %{scheme: scheme, host: host, port: port} = Enum.into(NotSpotify.config([:files, :host]), %{})
     URI.to_string(%URI{scheme: scheme, host: host, port: port, path: "/files/#{filename}"})
+  end
+
+  defp put_mp3_data(changeset, stat) do
+    %{tags: tags} = stat
+
+    changeset
+    |> maybe_add_tag(tags, "TIT2", :title)
+    |> maybe_add_tag(tags, "TPE1", :artist)
+    |> maybe_add_tag(tags, "TALB", :album)
+    |> maybe_add_tag(tags, "TCON", :genre)
+    |> maybe_add_tag(tags, "TYER", :date_released)
+  end
+
+  defp get_tag(tags, key) do
+    tags |> Map.get(key, []) |> List.first("")
+  end
+
+  defp maybe_add_tag(changeset, tags, tag, key) do
+    tags
+    |> get_tag(tag)
+    |> case do
+      "" -> changeset
+      value -> Ecto.Changeset.put_change(changeset, key, value)
+    end
   end
 end
