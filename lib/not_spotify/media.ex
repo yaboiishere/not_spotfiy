@@ -20,6 +20,7 @@ defmodule NotSpotify.Media do
 
   def list_songs(params \\ %{}) do
     from(s in Song, order_by: ^filter_order_by(params))
+    |> add_filters(params["search_query"])
     |> Repo.all()
     |> Repo.preload(:user)
   end
@@ -211,4 +212,12 @@ defmodule NotSpotify.Media do
   end
 
   defp filter_order_by(_), do: []
+
+  defp add_filters(query, search_string) do
+    from(s in query,
+      where:
+        ilike(s.title, ^"%#{search_string}%") or ilike(s.artist, ^"%#{search_string}%") or
+          ilike(s.album_artist, ^"%#{search_string}%") or ilike(s.genre, ^"%#{search_string}%")
+    )
+  end
 end

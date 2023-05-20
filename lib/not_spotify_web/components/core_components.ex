@@ -273,6 +273,24 @@ defmodule NotSpotifyWeb.CoreComponents do
     """
   end
 
+  attr :query, :string, required: true, doc: "the query to search for"
+
+  attr :class, :string, default: nil, doc: "the class to apply to the form"
+
+  def search_form(assigns) do
+    ~H"""
+    <form phx-submit="search" phx-change="search" phx-value-query={@query} class={@class}>
+      <.input
+        type="text"
+        name="query"
+        value={@query}
+        placeholder="Search"
+        class="text-sm text-zinc-100 placeholder-zinc-100 bg-brand-grey rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent my-auto"
+      />
+    </form>
+    """
+  end
+
   @doc """
   Renders a button.
 
@@ -293,7 +311,7 @@ defmodule NotSpotifyWeb.CoreComponents do
       type={@type}
       class={[
         "phx-submit-loading:opacity-75 rounded-lg bg-brand-orange hover:bg-brand-black py-2 px-3",
-        "text-sm font-semibold leading-6 text-zinc-100 hover:text-zinc-100 active:text-brand-black, border-zinc-100",
+        "text-sm font-semibold leading-6 text-zinc-100 hover:text-zinc-100 active:text-brand-black, border-zinc-100 border-1 border-brand-black",
         @class
       ]}
       {@rest}
@@ -423,7 +441,7 @@ defmodule NotSpotifyWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-[98%] rounded-lg text-brand-orange focus:ring-0 sm:text-sm sm:leading-6",
+          "block w-[98%] rounded-lg text-brand-orange focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-orange-600 phx-no-feedback:focus:border-brand-orange",
           "border-brand-orange focus:border-orange-600",
           "bg-brand-black",

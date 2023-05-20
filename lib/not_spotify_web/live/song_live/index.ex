@@ -20,8 +20,12 @@ defmodule NotSpotifyWeb.SongLive.Index do
 
     new_socket =
       socket
-      |> assign(current_user: current_user, sorting: SortingHelpers.default_values())
-      |> assign(:songs, Media.list_songs(params))
+      |> assign(
+        current_user: current_user,
+        sorting: SortingHelpers.default_values(),
+        songs: Media.list_songs(params),
+        query: ""
+      )
 
     {:ok, new_socket}
   end
@@ -124,6 +128,14 @@ defmodule NotSpotifyWeb.SongLive.Index do
     {:noreply, socket}
   end
 
+  def handle_event("search", %{"query" => query}, socket) do
+    new_socket = assign(socket, query: query)
+
+    Process.send(self(), {:update, %{search_query: query}}, [])
+
+    {:noreply, push_patch(new_socket, to: Routes.live_path(socket, __MODULE__, %{}))}
+  end
+
   defp show_upload_modal(socket) do
     LayoutComponent.show_modal(UploadFormComponent, %{
       id: :new,
@@ -138,10 +150,11 @@ defmodule NotSpotifyWeb.SongLive.Index do
   end
 
   defp merge_params(socket, overrides) do
-    %{sorting: sorting} = socket.assigns
+    %{sorting: sorting, query: query} = socket.assigns
 
     %{}
     |> Map.merge(sorting)
+    |> Map.merge(%{search_query: query})
     |> Map.merge(overrides)
   end
 end

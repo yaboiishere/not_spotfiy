@@ -1,9 +1,11 @@
 <div class="px-3">
   <.header>
-    Listing Songs
+    <div class="grid grid-cols-1 md:grid-cols-2">
+      Listing Songs <.search_form query={@query} class="my-auto" />
+    </div>
     <:actions>
       <.link patch={~p"/songs/new"}>
-        <.button>New Song</.button>
+        <.button class="mt-8 md:mt-0">New Song</.button>
       </.link>
     </:actions>
   </.header>
