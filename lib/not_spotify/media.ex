@@ -50,7 +50,17 @@ defmodule NotSpotify.Media do
     Song.changeset(song, attrs)
   end
 
-  @keep_changes [:duration, :mp3_filesize, :mp3_filepath]
+  @keep_changes [
+    :duration,
+    :mp3_filesize,
+    :mp3_filepath,
+    :title,
+    :artist,
+    :album,
+    :genre,
+    :date_released,
+    :date_recorded
+  ]
   def change_song(%Ecto.Changeset{} = prev_changeset, attrs) do
     %Song{}
     |> change_song(attrs)

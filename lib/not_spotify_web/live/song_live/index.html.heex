@@ -21,7 +21,7 @@
   <:col :let={song} label="Title" name="title" class="break-all"><%= song.title %></:col>
   <:col :let={song} label="Artist" name="artist" class="break-all"><%= song.artist %></:col>
   <:col :let={song} label="Genre" name="genre" hidden><%= song.genre %></:col>
-  <:col :let={song} label="Album" name="album_artist" hidden><%= song.album_artist %></:col>
+  <:col :let={song} label="Album" name="album" hidden><%= song.album %></:col>
   <:col :let={song} label="Duration" name="duration" hidden>
     <%= song.duration |> formatted_length %>
   </:col>

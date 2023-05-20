@@ -10,7 +10,7 @@ defmodule NotSpotifyWeb.SongLive.SongEntryComponent do
   def render(assigns) do
     ~H"""
     <div class="sm:grid sm:grid-cols-2 sm:gap-2 sm:items-start sm:border-t sm:border-brand-orange sm:pt-2 text-brand-orange">
-      <div class="rounded-md px-3 py-2 mt-2 shadow-sm focus-within:ring-1 ">
+      <div class="rounded-md px-3 py-2 mt-2 shadow-sm">
         <label for="name" class="block text-xs font-medium">
           <%= if @duration do %>
             Title <span class="text-brand-orange">(<%= MP3Stat.to_mmss(@duration) %>)</span>
@@ -27,7 +27,6 @@ defmodule NotSpotifyWeb.SongLive.SongEntryComponent do
           name={"songs[#{@ref}][title]"}
           value={@title}
           class="mt-2 block w-[98%] rounded-lg text-brand-orange focus:ring-0 sm:text-sm sm:leading-6 phx-no-feedback:border-orange-600 phx-no-feedback:focus:border-brand-orange border-brand-orange focus:border-orange-600 bg-brand-black"
-          {%{autofocus: @index == 0}}
         />
       </div>
       <div class="rounded-md px-3 py-2 mt-2 shadow-sm">
