@@ -42,12 +42,12 @@ defmodule NotSpotifyWeb.PlayerLive do
             <button
               type="button"
               class="sm:block xl:block mx-auto scale-75 hover:text-orange-600"
-              phx-click={js_prev()}
+              phx-click="stop"
               aria-label="stop_queue"
             >
               <FontAwesome.LiveView.icon
                 name="circle-stop"
-                type="solid"
+                type="regular"
                 class="h-6 w-6 fill-brand-orange hover:fill-orange-600"
               />
             </button>
@@ -307,6 +307,13 @@ defmodule NotSpotifyWeb.PlayerLive do
 
   def handle_event("seeked", %{"seeked" => seeked}, socket) do
     set_elapsed(socket.assigns.current_user, seeked)
+
+    {:noreply, socket}
+  end
+
+  def handle_event("stop", _, socket) do
+    current_user = socket.assigns.current_user
+    MusicBus.broadcast(User.process_name(current_user), {Media, Media.Events.Stop})
 
     {:noreply, socket}
   end
