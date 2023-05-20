@@ -23,6 +23,8 @@ defmodule NotSpotify.Media.Song do
     :server_ip
   ]
 
+  def columns(), do: @attrs
+
   schema "songs" do
     field(:title, :string)
     field(:album_artist, :string)

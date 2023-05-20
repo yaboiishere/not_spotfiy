@@ -1,4 +1,7 @@
 defmodule NotSpotify.MusicBus do
+  @moduledoc """
+  Functions for working with process groups.
+  """
   alias NotSpotify.Media.PlayingProcess
   alias NotSpotify.Repo
   alias NotSpotify.Accounts.User

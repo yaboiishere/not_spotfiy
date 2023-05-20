@@ -1,9 +1,11 @@
 <div class="px-3">
   <.header>
-    Listing Songs
+    <div class="grid grid-cols-1 md:grid-cols-2">
+      Listing Songs <.search_form query={@query} class="my-auto" />
+    </div>
     <:actions>
       <.link patch={~p"/songs/new"}>
-        <.button>New Song</.button>
+        <.button class="mt-8 md:mt-0">New Song</.button>
       </.link>
     </:actions>
   </.header>
@@ -11,27 +13,31 @@
 
 <.table
   id="songs"
-  rows={@streams.songs}
-  row_click={fn {_id, song} -> JS.navigate(~p"/songs/#{song}") end}
+  rows={@songs}
+  sorting={@sorting}
+  row_click={fn song -> JS.navigate(~p"/songs/#{song}") end}
+  row_id={fn song -> "song-#{song.id}" end}
 >
-  <:col :let={{_id, song}} label="Title" class="break-all"><%= song.title %></:col>
-  <:col :let={{_id, song}} label="Artist" class="break-all"><%= song.artist %></:col>
-  <:col :let={{_id, song}} label="Genre" hidden><%= song.genre %></:col>
-  <:col :let={{_id, song}} label="Album" hidden><%= song.album_artist %></:col>
-  <:col :let={{_id, song}} label="Duration" hidden><%= song.duration |> formatted_length %></:col>
-  <:col :let={{_id, song}} label="Year" hidden><%= song.date_released %></:col>
-  <:col :let={{_id, song}} label="Uploaded by" hidden><%= song.user.username %></:col>
-  <:action :let={{_id, song}}>
+  <:col :let={song} label="Title" name="title" class="break-all"><%= song.title %></:col>
+  <:col :let={song} label="Artist" name="artist" class="break-all"><%= song.artist %></:col>
+  <:col :let={song} label="Genre" name="genre" hidden><%= song.genre %></:col>
+  <:col :let={song} label="Album" name="album_artist" hidden><%= song.album_artist %></:col>
+  <:col :let={song} label="Duration" name="duration" hidden>
+    <%= song.duration |> formatted_length %>
+  </:col>
+  <:col :let={song} label="Year" name="date_released" hidden><%= song.date_released %></:col>
+  <:col :let={song} label="Uploaded by" hidden><%= song.user.username %></:col>
+  <:action :let={song}>
     <%= if @current_user.id == song.user_id or @current_user.is_admin do %>
       <.link patch={~p"/songs/#{song}/edit"} class="fill-zinc-100 hover:fill-zinc-300">
         <FontAwesome.LiveView.icon name="pen-to-square" type="solid" class="h-5 w-5 inline" />
       </.link>
     <% end %>
   </:action>
-  <:action :let={{id, song}}>
+  <:action :let={song}>
     <%= if @current_user.id == song.user_id or @current_user.is_admin do %>
       <.link
-        phx-click={JS.push("delete", value: %{id: song.id}) |> hide("##{id}")}
+        phx-click={JS.push("delete", value: %{id: song.id}) |> hide("#song-#{song.id}")}
         data-confirm="Are you sure?"
       >
         <FontAwesome.LiveView.icon
@@ -42,7 +48,7 @@
       </.link>
     <% end %>
   </:action>
-  <:action :let={{_id, song}}>
+  <:action :let={song}>
     <.link phx-click={JS.push("play", value: %{id: song.id})}>
       <FontAwesome.LiveView.icon
         name="play"
@@ -51,7 +57,7 @@
       />
     </.link>
   </:action>
-  <:action :let={{_id, song}}>
+  <:action :let={song}>
     <.link phx-click={JS.push("addToQueue", value: %{id: song.id})}>
       <FontAwesome.LiveView.icon
         name="circle-plus"

@@ -1,4 +1,5 @@
 defmodule NotSpotify.Release do
+  @moduledoc false
   @app :not_spotify
 
   def migrate do
