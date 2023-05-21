@@ -575,13 +575,17 @@ defmodule NotSpotifyWeb.CoreComponents do
                 col[:class]
               ]}
             >
-              <.live_component
-                module={NotSpotifyWeb.SortingComponent}
-                id={"sorting-by-#{col[:name]}"}
-                name={col[:name]}
-                label={col[:label]}
-                sorting={@sorting}
-              />
+              <%= if is_nil(@sorting) do %>
+                <.live_component
+                  module={NotSpotifyWeb.SortingComponent}
+                  id={"sorting-by-#{col[:name]}"}
+                  name={col[:name]}
+                  label={col[:label]}
+                  sorting={@sorting}
+                />
+              <% else %>
+                <%= col[:label] %>
+              <% end %>
             </th>
             <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
           </tr>
@@ -591,7 +595,11 @@ defmodule NotSpotifyWeb.CoreComponents do
           phx-update="replace"
           class="relative divide-y divide-brand-orange border-t border-brand-orange text-sm leading-6 text-zinc-100"
         >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group">
+          <tr
+            :for={{row, row_num} <- Enum.with_index(@rows)}
+            id={@row_id && @row_id.(row)}
+            class="group"
+          >
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
@@ -609,7 +617,7 @@ defmodule NotSpotifyWeb.CoreComponents do
                   if(col[:hidden], do: "hidden md:table-cell", else: ""),
                   col[:class]
                 ]}>
-                  <%= render_slot(col, @row_item.(row)) %>
+                  <%= render_slot(col, @row_item.({row, row_num})) %>
                 </span>
               </div>
             </td>
@@ -620,7 +628,7 @@ defmodule NotSpotifyWeb.CoreComponents do
                   :for={action <- @action}
                   class="relative font-semibold leading-6 fill-zinc-100 hover:fill-zinc-300 c-span-1"
                 >
-                  <%= render_slot(action, @row_item.(row)) %>
+                  <%= render_slot(action, @row_item.({row, row_num})) %>
                 </span>
               </div>
             </td>

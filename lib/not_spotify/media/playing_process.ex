@@ -49,6 +49,16 @@ defmodule NotSpotify.Media.PlayingProcess do
     GenServer.cast(process_name(user), {:set_elapsed, elapsed})
   end
 
+  def queue(user) do
+    start_if_not_running(user)
+    GenServer.call(process_name(user), :queue)
+  end
+
+  def remove_from_queue_by_index(user, index) do
+    start_if_not_running(user)
+    GenServer.cast(process_name(user), {:remove_from_queue_by_index, index})
+  end
+
   defmodule State do
     @moduledoc false
     defstruct song: nil,
@@ -117,7 +127,6 @@ defmodule NotSpotify.Media.PlayingProcess do
     MusicBus.broadcast(User.process_name(user), {Media, %Events.Play{song: song}})
 
     queue
-    |> List.delete(song)
     |> Enum.each(fn song ->
       MusicBus.broadcast(User.process_name(user), {Media, %Events.AddToQueue{song: song}})
     end)
@@ -211,6 +220,11 @@ defmodule NotSpotify.Media.PlayingProcess do
     {:noreply, %{state | elapsed: elapsed}}
   end
 
+  def handle_cast({:remove_from_queue_by_index, index}, %State{song_queue: song_queue} = state) do
+    song_queue = List.delete_at(song_queue, index |> String.to_integer())
+    {:noreply, %{state | song_queue: song_queue}}
+  end
+
   def handle_call(:get_volume, _from, %State{volume: volume} = state) do
     {:reply, volume, state}
   end
@@ -233,6 +247,10 @@ defmodule NotSpotify.Media.PlayingProcess do
 
   def handle_call(:elapsed, _from, %State{elapsed: elapsed} = state) do
     {:reply, elapsed, state}
+  end
+
+  def handle_call(:queue, _from, state) do
+    {:reply, state.song_queue, state}
   end
 
   def start_if_not_running(email) do

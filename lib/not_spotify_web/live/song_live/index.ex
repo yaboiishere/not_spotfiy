@@ -8,9 +8,11 @@ defmodule NotSpotifyWeb.SongLive.Index do
   alias NotSpotify.Media.Song
   alias NotSpotify.Accounts
   alias NotSpotify.Accounts.User
+  alias NotSpotify.Media.PlayingProcess
 
   alias NotSpotifyWeb.LayoutComponent
   alias NotSpotifyWeb.SongLive.UploadFormComponent
+  alias NotSpotifyWeb.SongLive.QueueComponent
 
   @impl true
   def mount(params, %{"user_token" => user_token}, socket) do
@@ -24,7 +26,8 @@ defmodule NotSpotifyWeb.SongLive.Index do
         current_user: current_user,
         sorting: SortingHelpers.default_values(),
         songs: Media.list_songs(params),
-        query: ""
+        query: "",
+        queue: PlayingProcess.queue(current_user)
       )
 
     {:ok, new_socket}
@@ -70,6 +73,13 @@ defmodule NotSpotifyWeb.SongLive.Index do
     |> assign(:song, nil)
   end
 
+  defp apply_action(socket, :queue, _params) do
+    socket
+    |> assign(:page_title, "Queue")
+    |> assign(:song, nil)
+    |> show_queue_modal()
+  end
+
   defp apply_action(socket, nil, params) do
     apply_action(socket, :index, params)
   end
@@ -98,6 +108,42 @@ defmodule NotSpotifyWeb.SongLive.Index do
     {:noreply, push_patch(new_socket, to: path)}
   end
 
+  def handle_info({Media, %Media.Events.AddToQueue{song: song}}, socket) do
+    new_socket =
+      socket
+      |> put_flash(:info, "Added #{song.title} to queue")
+      |> assign(:queue, PlayingProcess.queue(socket.assigns.current_user))
+
+    {:noreply, new_socket}
+  end
+
+  def handle_info({Media, Media.Events.ClearQueue}, socket) do
+    new_socket =
+      socket
+      |> put_flash(:info, "Cleared queue")
+      |> assign(:queue, PlayingProcess.queue(socket.assigns.current_user))
+
+    {:noreply, new_socket}
+  end
+
+  def handle_info({Media, %Media.Events.NextCallback{}}, socket) do
+    new_socket =
+      socket
+      |> assign(:queue, PlayingProcess.queue(socket.assigns.current_user))
+
+    {:noreply, new_socket}
+  end
+
+  def handle_info({Media, %Media.Events.PrevCallback{}}, socket) do
+    new_socket =
+      socket
+      |> assign(:queue, PlayingProcess.queue(socket.assigns.current_user))
+
+    {:noreply, new_socket}
+  end
+
+
+
   def handle_info({Media, _}, socket) do
     {:noreply, socket}
   end
@@ -116,8 +162,9 @@ defmodule NotSpotifyWeb.SongLive.Index do
     current_user = socket.assigns.current_user
     song = Media.get_song!(id)
     Media.play_song(song, current_user)
+    queue = PlayingProcess.queue(current_user)
 
-    {:noreply, assign(socket, song: song, playing: true)}
+    {:noreply, assign(socket, song: song, playing: true, queue: queue)}
   end
 
   def handle_event("addToQueue", %{"id" => id}, socket) do
@@ -136,6 +183,29 @@ defmodule NotSpotifyWeb.SongLive.Index do
     {:noreply, push_patch(new_socket, to: Routes.live_path(socket, __MODULE__, %{}))}
   end
 
+  def handle_event(
+        "remove_from_queue",
+        %{"id" => index},
+        %{assigns: %{current_user: current_user}} = socket
+      ) do
+    PlayingProcess.remove_from_queue_by_index(current_user, index)
+
+    new_socket =
+      socket
+      |> put_flash(:info, "Song removed from queue")
+      |> assign(:queue, PlayingProcess.queue(current_user))
+      |> push_patch(to: ~p"/songs/queue")
+
+    {:noreply, new_socket}
+  end
+
+  def handle_event("clear_queue", _params, socket) do
+    current_user = socket.assigns.current_user
+    MusicBus.broadcast(User.process_name(current_user), {Media, Media.Events.ClearQueue})
+
+    {:noreply, socket}
+  end
+
   defp show_upload_modal(socket) do
     LayoutComponent.show_modal(UploadFormComponent, %{
       id: :new,
@@ -144,6 +214,21 @@ defmodule NotSpotifyWeb.SongLive.Index do
       song: socket.assigns.song,
       title: socket.assigns.page_title,
       current_user: socket.assigns.current_user
+    })
+
+    socket
+  end
+
+  defp show_queue_modal(socket) do
+    LayoutComponent.show_modal(QueueComponent, %{
+      id: :queue,
+      patch: "/",
+      confirm: {"Clear Queue", type: "submit", form: "queue-form"},
+      cancel: "Close",
+      song: socket.assigns.song,
+      title: socket.assigns.page_title,
+      current_user: socket.assigns.current_user,
+      queue: socket.assigns.queue
     })
 
     socket
