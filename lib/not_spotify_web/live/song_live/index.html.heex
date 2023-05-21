@@ -21,7 +21,7 @@
   row_click={fn song -> JS.push("play", value: %{id: song.id}) end}
   row_id={fn song -> "song-#{song.id}" end}
 >
-  <:col :let={{song, _i}} label="Title" name="title" class="break-all"><%= song.title %></:col>
+  <:col :let={{song, _i}} label="Title" name="title" class="break-words"><%= song.title %></:col>
   <:col :let={{song, _i}} label="Artist" name="artist" class="break-all"><%= song.artist %></:col>
   <:col :let={{song, _i}} label="Genre" name="genre" hidden><%= song.genre %></:col>
   <:col :let={{song, _i}} label="Album" name="album" hidden><%= song.album %></:col>
@@ -32,6 +32,24 @@
     <%= song.date_released %>
   </:col>
   <:col :let={{song, _i}} label="Uploaded by" hidden><%= song.user.username %></:col>
+  <:action :let={{song, _i}}>
+    <.link phx-click={JS.navigate(~p"/songs/#{song}")}>
+      <FontAwesome.LiveView.icon
+        name="circle-info"
+        type="solid"
+        class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300"
+      />
+    </.link>
+  </:action>
+  <:action :let={{song, _i}}>
+    <.link phx-click={JS.push("addToQueue", value: %{id: song.id})}>
+      <FontAwesome.LiveView.icon
+        name="circle-plus"
+        type="solid"
+        class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300"
+      />
+    </.link>
+  </:action>
   <:action :let={{song, _i}}>
     <%= if @current_user.id == song.user_id or @current_user.is_admin do %>
       <.link patch={~p"/songs/#{song}/edit"} class="fill-zinc-100 hover:fill-zinc-300">
@@ -52,24 +70,6 @@
         />
       </.link>
     <% end %>
-  </:action>
-  <:action :let={{song, _i}}>
-    <.link phx-click={JS.navigate(~p"/songs/#{song}")}>
-      <FontAwesome.LiveView.icon
-        name="circle-info"
-        type="solid"
-        class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300"
-      />
-    </.link>
-  </:action>
-  <:action :let={{song, _i}}>
-    <.link phx-click={JS.push("addToQueue", value: %{id: song.id})}>
-      <FontAwesome.LiveView.icon
-        name="circle-plus"
-        type="solid"
-        class="h-5 w-5 inline fill-zinc-100 hover:fill-zinc-300"
-      />
-    </.link>
   </:action>
 </.table>
 

@@ -12,10 +12,10 @@ defmodule NotSpotifyWeb.LayoutComponent do
     send_update(__MODULE__, id: "layout", show: nil)
   end
 
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def update(%{id: id} = assigns, socket) do
     show =
       case assigns[:show] do
-
         %{module: _module, confirm: {text, type: "submit", form: "queue-form"}} = show ->
           show
           |> Map.put_new(:title, show[:title])
@@ -26,7 +26,7 @@ defmodule NotSpotifyWeb.LayoutComponent do
           |> Map.put_new(:navigate, nil)
           |> Map.put_new(:confirm_attrs, %{type: "submit", form: "queue-form"})
           |> Map.put_new(:confirm_text, text)
-        
+
         %{module: _module, confirm: {text, attrs}} = show ->
           show
           |> Map.put_new(:title, show[:title])

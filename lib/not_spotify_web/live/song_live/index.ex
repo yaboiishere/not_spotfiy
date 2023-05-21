@@ -142,8 +142,6 @@ defmodule NotSpotifyWeb.SongLive.Index do
     {:noreply, new_socket}
   end
 
-
-
   def handle_info({Media, _}, socket) do
     {:noreply, socket}
   end
