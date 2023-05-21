@@ -144,9 +144,10 @@ Hooks.AudioPlayer = {
     clearInterval(this.progressTimer);
     this.player.pause();
     this.player.currentTime = 0;
+    this.player.duration = 0;
     this.updateProgress();
-    this.duration.innerText = "";
-    this.currentTime.innerText = "";
+    this.duration.innerText = "00:00";
+    this.currentTime.innerText = "00:00";
   },
 
   updateProgress() {

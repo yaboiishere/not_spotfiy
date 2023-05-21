@@ -108,6 +108,14 @@ defmodule NotSpotifyWeb.SongLive.Index do
     {:noreply, push_patch(new_socket, to: path)}
   end
 
+  def handle_info({:remove_from_queue, index}, socket) do
+    {:noreply, do_remove_from_queue(socket, index)}
+  end
+
+  def handle_info({:play, id}, socket) do
+    {:noreply, do_play(socket, id)}
+  end
+
   def handle_info({Media, %Media.Events.AddToQueue{song: song}}, socket) do
     new_socket =
       socket
@@ -127,19 +135,15 @@ defmodule NotSpotifyWeb.SongLive.Index do
   end
 
   def handle_info({Media, %Media.Events.NextCallback{}}, socket) do
-    new_socket =
-      socket
-      |> assign(:queue, PlayingProcess.queue(socket.assigns.current_user))
-
-    {:noreply, new_socket}
+    {:noreply, update_queue(socket)}
   end
 
   def handle_info({Media, %Media.Events.PrevCallback{}}, socket) do
-    new_socket =
-      socket
-      |> assign(:queue, PlayingProcess.queue(socket.assigns.current_user))
+    {:noreply, update_queue(socket)}
+  end
 
-    {:noreply, new_socket}
+  def handle_info({Media, %Media.Events.Play{}}, socket) do
+    {:noreply, update_queue(socket)}
   end
 
   def handle_info({Media, _}, socket) do
@@ -157,12 +161,7 @@ defmodule NotSpotifyWeb.SongLive.Index do
   end
 
   def handle_event("play", %{"id" => id}, socket) do
-    current_user = socket.assigns.current_user
-    song = Media.get_song!(id)
-    Media.play_song(song, current_user)
-    queue = PlayingProcess.queue(current_user)
-
-    {:noreply, assign(socket, song: song, playing: true, queue: queue)}
+    {:noreply, do_play(socket, id)}
   end
 
   def handle_event("addToQueue", %{"id" => id}, socket) do
@@ -184,17 +183,9 @@ defmodule NotSpotifyWeb.SongLive.Index do
   def handle_event(
         "remove_from_queue",
         %{"id" => index},
-        %{assigns: %{current_user: current_user}} = socket
+        %{assigns: %{current_user: _current_user}} = socket
       ) do
-    PlayingProcess.remove_from_queue_by_index(current_user, index)
-
-    new_socket =
-      socket
-      |> put_flash(:info, "Song removed from queue")
-      |> assign(:queue, PlayingProcess.queue(current_user))
-      |> push_patch(to: ~p"/songs/queue")
-
-    {:noreply, new_socket}
+    {:noreply, do_remove_from_queue(socket, index)}
   end
 
   def handle_event("clear_queue", _params, socket) do
@@ -202,6 +193,10 @@ defmodule NotSpotifyWeb.SongLive.Index do
     MusicBus.broadcast(User.process_name(current_user), {Media, Media.Events.ClearQueue})
 
     {:noreply, socket}
+  end
+
+  def handle_event("play_remove_from_queue", %{"song_id" => song_id, "index" => index}, socket) do
+    {:noreply, do_play_remove_from_queue(socket, song_id, index)}
   end
 
   defp show_upload_modal(socket) do
@@ -239,5 +234,35 @@ defmodule NotSpotifyWeb.SongLive.Index do
     |> Map.merge(sorting)
     |> Map.merge(%{search_query: query})
     |> Map.merge(overrides)
+  end
+
+  defp update_queue(socket) do
+    assign(socket, :queue, PlayingProcess.queue(socket.assigns.current_user))
+  end
+
+  defp do_remove_from_queue(%{assigns: %{current_user: current_user}} = socket, index) do
+    PlayingProcess.remove_from_queue_by_index(current_user, index)
+
+    socket
+    |> assign(:queue, PlayingProcess.queue(current_user))
+    |> push_patch(to: ~p"/songs/queue")
+  end
+
+  defp do_play(%{assigns: %{current_user: current_user}} = socket, song_id) do
+    song = Media.get_song!(song_id)
+    Media.play_song(song, current_user)
+    queue = PlayingProcess.queue(current_user)
+
+    assign(socket, song: song, playing: true, queue: queue)
+  end
+
+  defp do_play_remove_from_queue(
+         %{assigns: %{current_user: _current_user}} = socket,
+         song_id,
+         index
+       ) do
+    socket
+    |> do_play(song_id)
+    |> do_remove_from_queue(index)
   end
 end

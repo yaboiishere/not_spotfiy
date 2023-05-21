@@ -311,8 +311,7 @@ defmodule NotSpotifyWeb.PlayerLive do
     {:noreply, socket}
   end
 
-  def handle_event("stop", _, socket) do
-    current_user = socket.assigns.current_user
+  def handle_event("stop", _, %{assigns: %{current_user: current_user}} = socket) do
     MusicBus.broadcast(User.process_name(current_user), {Media, Media.Events.Stop})
 
     {:noreply, socket}

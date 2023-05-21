@@ -221,7 +221,7 @@ defmodule NotSpotify.Media.PlayingProcess do
   end
 
   def handle_cast({:remove_from_queue_by_index, index}, %State{song_queue: song_queue} = state) do
-    song_queue = List.delete_at(song_queue, index |> String.to_integer())
+    song_queue = List.delete_at(song_queue, index)
     {:noreply, %{state | song_queue: song_queue}}
   end
 
