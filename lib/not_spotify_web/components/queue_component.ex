@@ -7,7 +7,7 @@ defmodule NotSpotifyWeb.SongLive.QueueComponent do
       <.table
         id="queue-modal"
         rows={@queue}
-        row_click={fn song -> JS.push("play", value: %{id: song.id}) end}
+        row_click={fn {song, index}-> JS.push("play_remove_from_queue", value: %{song_id: song.id, index: index}) end}
         row_id={fn song -> "queue-song-#{song.id}" end}
       >
         <:col :let={{song, _i}} label="Title" name="title" class="break-all"><%= song.title %></:col>

@@ -602,7 +602,7 @@ defmodule NotSpotifyWeb.CoreComponents do
           >
             <td
               :for={{col, i} <- Enum.with_index(@col)}
-              phx-click={@row_click && @row_click.(row)}
+              phx-click={@row_click && @row_click.({row, row_num})}
               class={[
                 "relative p-0",
                 @row_click && "hover:cursor-pointer",
