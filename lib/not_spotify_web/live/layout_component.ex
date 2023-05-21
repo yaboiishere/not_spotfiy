@@ -12,14 +12,27 @@ defmodule NotSpotifyWeb.LayoutComponent do
     send_update(__MODULE__, id: "layout", show: nil)
   end
 
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def update(%{id: id} = assigns, socket) do
     show =
       case assigns[:show] do
+        %{module: _module, confirm: {text, type: "submit", form: "queue-form"}} = show ->
+          show
+          |> Map.put_new(:title, show[:title])
+          |> Map.put_new(:on_cancel, show[:on_cancel] || hide_modal(id))
+          |> Map.put_new(:on_confirm, show[:on_confirm] || hide_modal(id))
+          |> Map.put_new(:cancel, show[:cancel] || "Cancel")
+          |> Map.put_new(:patch, nil)
+          |> Map.put_new(:navigate, nil)
+          |> Map.put_new(:confirm_attrs, %{type: "submit", form: "queue-form"})
+          |> Map.put_new(:confirm_text, text)
+
         %{module: _module, confirm: {text, attrs}} = show ->
           show
           |> Map.put_new(:title, show[:title])
           |> Map.put_new(:on_cancel, show[:on_cancel] || %JS{})
           |> Map.put_new(:on_confirm, show[:on_confirm] || %JS{})
+          |> Map.put_new(:cancel, show[:cancel] || "Cancel")
           |> Map.put_new(:patch, nil)
           |> Map.put_new(:navigate, nil)
           |> Map.merge(%{confirm_text: text, confirm_attrs: attrs})
@@ -45,7 +58,7 @@ defmodule NotSpotifyWeb.LayoutComponent do
         >
           <:title><%= @show.title %></:title>
           <.live_component module={@show.module} {@show} />
-          <:cancel>Cancel</:cancel>
+          <:cancel><%= @show.cancel %></:cancel>
           <:confirm {@show.confirm_attrs}><%= @show.confirm_text %></:confirm>
         </.modal>
       <% end %>

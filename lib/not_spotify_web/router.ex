@@ -73,6 +73,7 @@ defmodule NotSpotifyWeb.Router do
     live "/songs", SongLive.Index, :index
     live "/songs/new", SongLive.Index, :new
     live "/songs/:id/edit", SongLive.Index, :edit
+    live "/songs/queue", SongLive.Index, :queue
 
     live "/songs/:id", SongLive.Show, :show
     live "/songs/:id/show/edit", SongLive.Show, :edit
