@@ -576,6 +576,8 @@ defmodule NotSpotifyWeb.CoreComponents do
               ]}
             >
               <%= if is_nil(@sorting) do %>
+                <%= col[:label] %>
+              <% else %>
                 <.live_component
                   module={NotSpotifyWeb.SortingComponent}
                   id={"sorting-by-#{col[:name]}"}
@@ -583,8 +585,6 @@ defmodule NotSpotifyWeb.CoreComponents do
                   label={col[:label]}
                   sorting={@sorting}
                 />
-              <% else %>
-                <%= col[:label] %>
               <% end %>
             </th>
             <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
