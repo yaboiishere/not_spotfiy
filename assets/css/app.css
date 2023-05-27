@@ -4,11 +4,16 @@
 
 /* This file is for your main application CSS */
 
-.app-background {
-  background-color: #1d1d1d;
+#live-root::-webkit-scrollbar-thumb {
+  /* Style away! */
+  background-color: #F79757;
+  border-radius: 5px;
 }
 
-.app-foreground {
-  background-color: #333;
-  border-radius: 41px;
+#live-root::-webkit-scrollbar {
+  width: 5px;
+  background-color: #1D1D1D;
+  border-color: #F79757;
+  border: 1px;
 }
+
