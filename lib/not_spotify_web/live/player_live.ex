@@ -25,8 +25,15 @@ defmodule NotSpotifyWeb.PlayerLive do
       </div>
       <div class="text-brand-orange px-1 sm:px-3 lg:px-1 xl:px-3 grid grid-cols-3 items-center">
         <div class="flex-col">
-          <div class="pr-6">
-            <div class="min-w-1 max-w-xs flex-col space-y-0.5 justify-end overflow-hidden">
+          <div class="pr-6 flex justify-around">
+            <%= if @song do %>
+              <img
+                src={"/songs/image/#{@song.id}"}
+                alt="Album cover"
+                class="w-16 h-16 rounded-lg hidden md:block"
+              />
+            <% end %>
+            <div class="min-w-1 max-w-xs flex-col space-y-0.5 justify-end overflow-hidden my-auto">
               <h1 class="text-right text-brand-orange text-sm sm:text-sm lg:text-sm xl:text-sm font-semibold truncate">
                 <%= if @song, do: @song.title, else: raw("&nbsp;") %>
               </h1>

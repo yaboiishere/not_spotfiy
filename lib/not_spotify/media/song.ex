@@ -20,7 +20,9 @@ defmodule NotSpotify.Media.Song do
     :mp3_filename,
     :mp3_filepath,
     :mp3_filesize,
-    :server_ip
+    :server_ip,
+    :icon_binary,
+    :icon_type
   ]
 
   def columns(), do: @attrs
@@ -39,6 +41,8 @@ defmodule NotSpotify.Media.Song do
     field(:mp3_filepath, :string)
     field(:mp3_filesize, :integer, default: 0)
     field(:server_ip, :string)
+    field(:icon_binary, :binary)
+    field(:icon_type, :string)
 
     belongs_to(:user, NotSpotify.Accounts.User)
 
@@ -110,6 +114,7 @@ defmodule NotSpotify.Media.Song do
     |> maybe_add_tag(tags, "TALB", :album)
     |> maybe_add_tag(tags, "TCON", :genre)
     |> maybe_add_tag(tags, "TYER", :date_released)
+    |> maybe_add_icon(tags)
   end
 
   defp get_tag(tags, key) do
@@ -122,6 +127,20 @@ defmodule NotSpotify.Media.Song do
     |> case do
       "" -> changeset
       value -> Ecto.Changeset.put_change(changeset, key, value)
+    end
+  end
+
+  defp maybe_add_icon(changeset, tags) do
+    tags
+    |> Map.get("APIC", "")
+    |> case do
+      "" ->
+        changeset
+
+      {type, _, _, binary} ->
+        changeset
+        |> Ecto.Changeset.put_change(:icon_binary, binary)
+        |> Ecto.Changeset.put_change(:icon_type, type)
     end
   end
 end
