@@ -59,7 +59,9 @@ defmodule NotSpotify.Media do
     :album,
     :genre,
     :date_released,
-    :date_recorded
+    :date_recorded,
+    :icon_binary,
+    :icon_type
   ]
   def change_song(%Ecto.Changeset{} = prev_changeset, attrs) do
     %Song{}
@@ -214,6 +216,8 @@ defmodule NotSpotify.Media do
     File.mkdir_p!(Path.dirname(song.mp3_filepath))
     File.cp!(tmp_path, song.mp3_filepath)
   end
+
+  defp filter_order_by(%{"sort_by" => "icon"}), do: [{:asc, :title}]
 
   defp filter_order_by(%{"sort_by" => name, "sort_dir" => dir}) do
     atom_name = String.to_atom(name)
