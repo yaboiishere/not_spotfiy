@@ -65,11 +65,16 @@
       <% end %>
     </ul>
   </span>
-  <div class="flex-grow bg-brand-grey rounded-3xl p-3 lg:px-20 m-3 overflow-auto mt-0 max-h-full h-max">
-    <.flash_group flash={@flash} />
-    <%= @inner_content %>
+  <div class="bg-brand-grey rounded-3xl m-3 overflow-clip mt-0 max-h-max h-full min-h-max">
+    <div
+      class="flex-grow overflow-auto max-h-full min-h-full h-full p-3 lg:px-20 lg:mr-1"
+      id="live-root"
+    >
+      <.flash_group flash={@flash} />
+      <%= @inner_content %>
 
-    <.live_component module={NotSpotifyWeb.LayoutComponent} id="layout" />
+      <.live_component module={NotSpotifyWeb.LayoutComponent} id="layout" />
+    </div>
   </div>
   <footer class="mx-3 mb-3">
     <%= if @current_user do %>
