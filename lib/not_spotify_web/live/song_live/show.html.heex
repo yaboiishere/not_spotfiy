@@ -1,4 +1,4 @@
-<div class="bg-zinc-800 p-4 rounded-3xl grid m-auto w-auto min-w-[50%] border-brand-orange border-2 h-full">
+<div class="bg-zinc-800 p-4 rounded-3xl grid m-auto w-auto min-w-[50%] border-brand-orange border-2 h-max">
   <div class="col-span-2 w-full">
     <.header>
       <%= @song.title %>
@@ -17,7 +17,7 @@
 
   <div class="col-span-2 justify-center block md:flex">
     <%= if @song.icon_type do %>
-      <img src={"/songs/image/#{@song.id}"} class="mt-5 mx-auto w-auto rounded-xl" />
+      <img src={"/songs/image/#{@song.id}"} class="mt-5 mx-auto w-auto rounded-xl md:max-w-[33%]" />
     <% end %>
     <.list>
       <:item title="Artist"><%= @song.artist %></:item>
