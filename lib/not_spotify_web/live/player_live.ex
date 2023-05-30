@@ -185,16 +185,6 @@ defmodule NotSpotifyWeb.PlayerLive do
           </div>
         </div>
       </div>
-
-      <.modal
-        id="enable-audio"
-        on_confirm={js_listen_now() |> hide_modal("enable-audio")}
-        data-js-show={show_modal("enable-audio")}
-      >
-        <:title>Start Listening now</:title>
-        Your browser needs a click event to enable playback
-        <:confirm>Listen Now</:confirm>
-      </.modal>
     </div>
     <!-- /player -->
     """
