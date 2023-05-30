@@ -425,10 +425,6 @@ defmodule NotSpotifyWeb.PlayerLive do
     JS.push("next_song")
   end
 
-  defp js_listen_now(js \\ %JS{}) do
-    JS.dispatch(js, "js:listen_now", to: "#audio-player")
-  end
-
   defp set_elapsed(current_user, elapsed) do
     seeked = round(elapsed)
 
