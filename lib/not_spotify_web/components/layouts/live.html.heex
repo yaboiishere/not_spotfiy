@@ -38,6 +38,13 @@
           </.link>
         </li>
       <% else %>
+        <%= if is_nil(@current_user) do %>
+          <li>
+            <h1 class="text-[0.8125rem] leading-6 font-semibold text-red-600">
+              THIS IS FOR EDUCATIONAL PURPOSES ONLY
+            </h1>
+          </li>
+        <% end %>
         <li>
           <.link
             href={~p"/users/register"}
