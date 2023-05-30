@@ -225,7 +225,7 @@ defmodule NotSpotify.Media do
     [{atom_dir, atom_name}]
   end
 
-  defp filter_order_by(_), do: []
+  defp filter_order_by(_), do: [{:asc, :title}]
 
   defp add_filters(query, search_string) do
     from(s in query,
